@@ -35,6 +35,7 @@ link:files/vendor/rails/actionpack/README.html.
 4. Follow the guidelines to start developing your application
 
 
+
 == Web Servers
 
 By default, Rails will try to use Mongrel and lighttpd if they are installed, otherwise
