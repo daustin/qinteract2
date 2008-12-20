@@ -1,0 +1,2 @@
+module MascotParamHelper
+end

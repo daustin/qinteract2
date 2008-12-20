@@ -1,0 +1,90 @@
+<table border="1">
+
+
+<tr><td>DTA Filter <BR></td><td>
+<fieldset>
+
+
+<% if @combion_filter.nil? %>
+<input type="checkbox" name="CombionOn" value="1" onClick="enableCombion()">
+<% else %>
+<input type="checkbox" name="CombionOn" value="1" onClick="enableCombion()" checked>
+<% end %>
+
+<% fields_for :combion_filter do |combion_filter| %>
+
+ Enable Combion Filter<BR><BR>
+Precursor Tolerance: &#177; <%= combion_filter.text_field :precursor_tolerance, {:size=>2}  %> m/z <BR>
+Scan Tolerance: <%= combion_filter.radio_button :scan_num, 1 %> <%= combion_filter.text_field :num_tolerance, {:size=>3}  %>  &nbsp;&nbsp;&nbsp;&nbsp;<%= combion_filter.radio_button :scan_num, 0%> <%= combion_filter.text_field :percent_tolerance, {:size=>3}  %>%<BR><BR>
+
+ <%= combion_filter.radio_button :algorithm, 'muquest'%> Use Muquest &nbsp; &nbsp; &nbsp; &nbsp; Threshold: <%= combion_filter.text_field :muquest_threshold, {:value => 1.9, :size=>3}  %><BR><BR>
+
+ <%= combion_filter.radio_button :algorithm, 'ionquest'%> Use Ion Quest &nbsp; &nbsp; &nbsp; &nbsp; Threshold: <%= combion_filter.text_field :ionquest_threshold, {:size=>3}  %>%
+<blockquote>
+<%= combion_filter.check_box(:ionquest_preprocess, {}, 'on', 'off')  %> Preprocess<BR>
+
+<%= combion_filter.check_box(:check_with_muquest,{}, 'on', 'off')  %> Check with MuQuest<BR>
+
+If  ionquest match is less than <%= combion_filter.text_field :ionquest_retest, {:size=>3} %>%, then retest<BR>
+
+using MuQuest, accepting values greater than  <%= combion_filter.text_field :muquest_retest_threshold, { :size=>4} %>
+</blockquote>
+
+<% end %>
+
+
+</fieldset>
+
+</td></tr>
+
+
+
+
+</table>
+
+
+<script>
+
+//now for combion
+
+
+combionEnabled = document.newObjectForm.CombionOn.checked;
+
+
+function enableCombion(){
+
+
+ for(var i = 0; i < document.newObjectForm.elements.length; i++){
+
+     if(document.newObjectForm.elements[i].name.indexOf("combion")==0){
+	
+     document.newObjectForm.elements[i].disabled = combionEnabled;
+
+
+     }
+
+
+
+  } 
+
+
+
+  combionEnabled = document.newObjectForm.CombionOn.checked;
+
+
+
+
+}
+
+
+// workaround for checkmark bug
+
+if (combionEnabled == false) {
+
+ combionEnabled = true;
+ enableCombion();
+ combionEnabled = false;
+
+}
+
+</script>

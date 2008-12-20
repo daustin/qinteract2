@@ -1,0 +1,27 @@
+<h1>Listing extract_params</h1>
+
+<table>
+  <tr>
+  <% for column in ExtractParam.content_columns %>
+    <th><%= column.human_name %></th>
+  <% end %>
+  </tr>
+  
+<% for extract_param in @extract_params %>
+  <tr>
+  <% for column in ExtractParam.content_columns %>
+    <td><%=h extract_param.send(column.name) %></td>
+  <% end %>
+    <td><%= link_to 'Show', :action => 'show', :id => extract_param %></td>
+    <td><%= link_to 'Edit', :action => 'edit', :id => extract_param %></td>
+    <td><%= link_to 'Destroy', { :action => 'destroy', :id => extract_param }, :confirm => 'Are you sure?', :post => true %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Previous page', { :page => @extract_param_pages.current.previous } if @extract_param_pages.current.previous %>
+<%= link_to 'Next page', { :page => @extract_param_pages.current.next } if @extract_param_pages.current.next %> 
+
+<br />
+
+<%= link_to 'New extract_param', :action => 'new' %>

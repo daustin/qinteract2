@@ -1,0 +1,2 @@
+module AnalysisAdminHelper
+end

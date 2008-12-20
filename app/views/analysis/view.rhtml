@@ -1,0 +1,131 @@
+<table cellpadding="2" cellspacing="0" border="1" width="100%">
+<TR><TD colspan=2>
+<H1><%= @analysis.pipeline_project.name -%> => <%= @analysis.name -%></H1>
+Submitted by <b><%= @analysis.owner -%></b> at <b><%= @analysis.created_at -%></b><BR>
+
+
+<% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{@analysis.path}/interact.xml") -%>
+
+<A HREF="<%=PEPXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=@analysis.path-%>/interact.xml"
+target="_blank">PepProphet</A> 
+
+<% end -%>
+
+<% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{@analysis.path}/interact-prot.xml") -%>
+
+ | <A HREF="<%=PROTXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=@analysis.path-%>/interact-prot.xml" target="_blank">ProtProphet</A>
+
+<% end -%>
+
+<% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{@analysis.path}/interact.prot.xml") -%>
+
+ | <A HREF="<%=PROTXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=@analysis.path-%>/interact.prot.xml" target="_blank">ProtProphet</A>
+
+<% end -%>
+
+<% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{@analysis.path}/ebp.xml") -%>
+
+
+| <A HREF="<%="#{PROJECT_URL_ROOT}"-%>/<%="#{@analysis.path}"-%>/ebp.xml" target="_blank">EBP</A> | 
+
+
+<% end -%>
+
+ <%=link_to "Delete", { :controller => "analysis", :action => "delete",
+:id => @analysis.id}, :confirm => "You are about to permanently delete all data
+for this analysis.  Are you sure?", :post => true %> | Rerun | 
+<%= link_to "Peptide Counts", { :action => "count_peptides", :id => @analysis.id}, :popup => true, :popup => ['params_window', 'height=300,width=600,scrollbars,resizable,screenX=200,screenY=200,top=200,left=200']  %> |
+<%= link_to "PI Numbers by Protein", { :action => "list_pi", :id => @analysis.id}, :popup => true, :popup => ['params_window', 'height=300,width=600,scrollbars,resizable,screenX=200,screenY=200,top=200,left=200']  %>
+
+
+<% if ! @datlist.nil? -%>
+<BR><BR>
+	<% for dat in @datlist -%>
+	
+	<%= link_to "#{dat[9...-1].strip}", "http://bioinf.itmat.upenn.edu/mascot/cgi/master_results.pl?file=../data/#{dat.strip}", :popup => true  %> | 
+	<% end -%>
+<% end -%>
+
+</TD></TR>
+
+<TR>
+<TD valign="top">
+
+<H3>Files:</H3>
+<% for file in @analysis.getFiles -%>
+
+<A
+HREF="<%="#{PROJECT_URL_ROOT}"-%>/<%="#{@analysis.path}"-%>/<%="#{file}"-%>" target="_blank"><%="#{file}"-%></A>
+
+<BR>
+
+<% end -%>
+
+
+</TD>
+
+<TD valign="top">
+<H2>Jobs</H2>
+
+<P>Qsub id: 
+<% 
+@tempjob = nil
+
+for job in @analysis.jobs 
+@tempjob = job if @tempjob.nil?
+
+-%>
+
+<%= link_to_remote("#{job.qsub_id}", :loading => "load_div_image('jobPane')", 
+:url => { :controller => 'job', :action => 'view', :id => job.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobPane" )%> | 
+
+<% end -%>
+</P>
+<HR>
+<div id="jobPane">
+Qsub: <%= @tempjob.qsub_id -%><BR>
+Cmd: <%= h(@tempjob.qsub_cmd) -%><BR>
+Started on: <%= @tempjob.created_at -%> <BR>
+<HR>
+
+<%= link_to_remote("Output", :loading => "load_div_image('jobSubPane')", 
+:url => { :controller => "job", :action => "output", :id => @tempjob.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobSubPane" )%> | 
+
+<%= link_to_remote("Script", :loading => "load_div_image('jobSubPane')", 
+:url => { :controller => "job", :action => "script", :id => @tempjob.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobSubPane" )%> | 
+
+<%= link_to_remote("Settings", :loading => "load_div_image('jobSubPane')", 
+:url => { :controller => "job", :action => "settings", :id => @tempjob.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobSubPane" )%> | 
+
+<%= link_to_remote("PBS Info", :loading => "load_div_image('jobSubPane')", 
+:url => { :controller => "job", :action => "pbsinfo", :id => @tempjob.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobSubPane" )%> | 
+
+<div id="jobSubPane">
+<P class="jobSubPane">
+<PRE>
+<%= h(@tempjob.output) %>
+
+</PRE>
+</P>
+</div>
+
+
+</div>
+
+</TD>
+
+
+</TR>
+
+
+</table>

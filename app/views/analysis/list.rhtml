@@ -1,0 +1,92 @@
+
+<BR>
+<TR>
+<TD colspan=2></TD>
+
+<TD colspan=2>
+<% if ! @alert_message.nil? -%>
+<script>
+	alert('<%=@alert_message%>');
+
+</script>
+
+<% end -%>
+
+<table cellpadding="2" cellspacing="5" border="0">
+<TR align="left"><TH>&nbsp;</TH><TH>Name</TH><TH>Created</TH><TH>Links</TH><TH>Last job</TH>
+<% for analysis in @analyses -%>
+<TR valign="top">
+<TD>
+<%= link_to_remote(image_tag('delete.gif', :size => "15x15", :border => 0),
+:loading => "load_div_image('#{@project_id}')", 
+:url => { :controller => "analysis", :action => "delete", :id => analysis.id },
+:confirm => "You are about to permanently delete all data for this analysis.  Are you sure?", 
+:post => true,
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => @project_id )%>
+
+</TD>
+
+<TD valign="top" nowrap align="left">
+<%=link_to "#{analysis.name}", {:action => "view", :id => analysis.id }%>
+
+</TD>
+<TD><%= analysis.created_at.strftime("%Y.%m.%d %H:%M") -%></TD>
+<TD align="center" nowrap>
+
+<% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{analysis.path}/interact.xml") -%>
+
+<A HREF="<%=PEPXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=analysis.path-%>/interact.xml"
+target="_blank">PepProphet</A> 
+
+<% end -%>
+
+<% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{analysis.path}/interact-prot.xml") -%>
+
+ | <A HREF="<%=PROTXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=analysis.path-%>/interact-prot.xml" target="_blank">ProtProphet</A>
+
+<% end -%>
+
+<% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{analysis.path}/interact.prot.xml") -%>
+
+ | <A HREF="<%=PROTXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=analysis.path-%>/interact.prot.xml" target="_blank">ProtProphet</A>
+
+<% end -%>
+
+<% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{analysis.path}/ebp.xml") -%>
+
+
+| <A HREF="<%="#{PROJECT_URL_ROOT}"-%>/<%="#{analysis.path}"-%>/ebp.xml" target="_blank">EBP</A>
+
+<BR>
+
+<% end -%>
+
+
+</TD>
+
+<% if analysis.jobs[0].nil? -%>
+
+<TD nowrap align="left">No Jobs Found</TD>
+
+<% else -%>
+
+<TD nowrap align="left">Qsub Id: <%= analysis.jobs[0].qsub_id -%><BR>
+<%= analysis.jobs[0].created_at.strftime("%Y.%m.%d %H:%M") -%></TD>
+
+<% end -%>
+
+</TR>
+
+
+<% end -%>
+
+</table>
+
+</TD>
+
+
+
+
+
+<TR>

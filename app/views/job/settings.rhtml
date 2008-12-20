@@ -1,0 +1,37 @@
+<PRE>
+
+<% if @job.extract_dta -%>
+<%= h(@job.extract_dta.to_xml(:except => [ :id, :job_id, :extract_param_id ])) %>
+<%= h(@job.extract_dta.extract_param.to_xml(:only => [ :filename ])) %>
+
+
+<% end -%>
+
+
+<% if @job.combion_filter -%>
+<%= h(@job.combion_filter.to_xml(:skip_instruct => true, :except => [ :id, :job_id ])) %>
+
+<% end -%>
+
+<% if @job.sequest_search -%>
+<%= h(@job.sequest_search.to_xml(:except => [ :id, :job_id, :sequest_param_id ])) %>
+<%= h(@job.sequest_search.sequest_param.to_xml(:only => [ :filename ])) %>
+
+<% end -%>
+
+
+<% if @job.mascot_search -%>
+<%= h(@job.mascot_search.to_xml(:except => [ :id, :job_id, :mascot_param_id ])) %>
+<%= h(@job.mascot_search.mascot_param.to_xml(:only => [ :filename ])) %>
+
+<% end -%>
+
+
+<% if @job.analysis_setting -%>
+<%= h(@job.analysis_setting.to_xml(:skip_instruct => true, :except => [ :id, :job_id ])) %>
+
+
+<% end -%>
+
+</PRE>
+

@@ -1,0 +1,88 @@
+<h1>Create a Project</h1>
+
+<%= render :partial => 'project_form' %>
+
+
+
+<HR><BR>
+<h1>Available Projects</h1>
+
+<% form_tag("list") do %>
+
+<div id="listfilter">Filter by Username:
+<select name="username">
+<option value="All">All</option>
+
+<% for name in @distinctprojects -%>
+
+<% if @filter && @filter.eql?(name.owner) %>
+<option value="<%= name.owner %>" selected><%= name.owner %></option>
+<% else %>
+<option value="<%= name.owner %>"><%= name.owner %></option>
+<% end %>
+
+<% end -%>
+
+
+</select>
+<%= submit_tag("  Apply  ") %>
+
+</div>
+
+<% end %>
+
+<BR>
+<% if @filter %>
+Filtering for username: <%= @filter %>
+<% else %>
+<BR>
+<% end %>
+<table cellpadding="10" cellspacing="0" border="1">
+
+<tr class="listheader">
+<td>User</td>
+<td nowrap>Project Name</td>
+<td>Created</td>
+<td>Analysis Info</td>
+</tr>
+
+<% for project in @projects -%>
+<tr class="listcontent">
+<td valign="top"><%= project.owner %></td>
+<td valign="top" nowrap><%=link_to image_tag('delete.gif', :size => "15x15", :border => 0), { :controller => "project", :action => "delete",:id => project.id, :username => @filter}, :confirm => "You are about to permanently delete all data for this project.  Are you absolutely sure?", :post => true %>
+<%= project.name %>  
+
+</td>
+<td valign="top"><%= project.created_at.strftime("%Y.%m.%d %H:%M") %></td>
+<td valign="top" nowrap>
+<% if project.pipeline_analyses.size > 0 %>
+
+<%= link_to_remote("#{project.pipeline_analyses.size}" + " analysis(es) found",
+:loading => "load_div_image('#{project.id}')", 
+:url => { :controller => "analysis", :action => "list", :id => project.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => project.id )%>
+
+<% else %>
+
+No analysis found
+
+<% end %>
+
+| Add Search & Analysis: 
+
+<%=link_to "Sequest", { :controller => "analysis", :action => "new_sequest", :id => project.id}, :post => true %>
+| <%=link_to "Mascot", { :controller => "analysis", :action => "new_mascot", :id => project.id}, :post => true %> (Beta)
+| Merged (To do)
+<div id="<%= project.id -%>"></div>
+</td>
+
+</tr>
+
+<% end -%>
+
+
+
+</table>
+
+

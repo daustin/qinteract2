@@ -1,0 +1,2 @@
+module JobAdminHelper
+end

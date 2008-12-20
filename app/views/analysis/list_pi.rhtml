@@ -1,0 +1,29 @@
+
+
+
+<HTML>
+<HEAD>
+
+<title>Peptide Count by Fractions</title>
+  <%= stylesheet_link_tag 'scaffold' %>
+ <%= javascript_include_tag :defaults %>
+   <%= javascript_include_tag "loadimage" %>
+
+</HEAD>
+
+<body>
+
+<A HREF="" onclick="javascript:self.close()">Close</A>
+<HR>
+<PRE>
+<%= "Protein\tpI Number" %>
+<%   @pilist.each do |i| -%>
+<%=i%>
+<% end -%>
+
+
+</PRE>
+
+</body>
+
+</HTML>

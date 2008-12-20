@@ -1,0 +1,2 @@
+class ProjectPage < LimsActiveRecord
+end

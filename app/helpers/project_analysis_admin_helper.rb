@@ -1,0 +1,2 @@
+module ProjectAnalysisAdminHelper
+end

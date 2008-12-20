@@ -1,0 +1,13 @@
+<% if @fn.index('.html').nil? -%>
+<PLAINTEXT>
+<% end -%>
+
+<%IO.foreach("#{PROJECT_ROOT}/#{@analysis.path}/#{@fn}") {|x| -%>
+<%=x -%>
+<% } -%>
+
+
+
+
+
+

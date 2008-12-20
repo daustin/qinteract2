@@ -1,0 +1,29 @@
+
+
+
+<HTML>
+<HEAD>
+
+<title>Peptide Count by Fractions</title>
+  <%= stylesheet_link_tag 'scaffold' %>
+ <%= javascript_include_tag :defaults %>
+   <%= javascript_include_tag "loadimage" %>
+
+</HEAD>
+
+<body>
+
+<A HREF="" onclick="javascript:self.close()">Close</A>
+<HR>
+<PRE>
+<%= "Fraction\tPeptide Count" %>
+<%   1.upto(@summary_counts.keys.length) do |i| -%>
+<%=@summary_counts[i.to_s][:base_name].split('/')[-1]%><%="\t"%><%=@summary_counts[i.to_s][:peptide_count]%>
+<% end -%>
+
+
+</PRE>
+
+</body>
+
+</HTML>

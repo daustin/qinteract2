@@ -1,0 +1,19 @@
+<%= error_messages_for 'pipeline_project' %>
+
+<% form_for :pipeline_project, :url => { :action => :create } do |project| %>
+
+<table border="0" cell_padding="1">
+<TR><TD>
+<p><label for="pipeline_project_name">Project Name</label><br/>
+<%= project.text_field :name  %></p>
+</TD><TD>
+
+<%= project.hidden_field :owner, :value => "#{session[:cas_user]}"  %></p>
+</TD>
+</TR>
+</table>
+
+<%= submit_tag "Create New Project" %>
+<% end %>
+
+

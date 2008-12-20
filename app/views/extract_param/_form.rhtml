@@ -1,0 +1,64 @@
+
+<H3><font color=red><%= flash[:notice] -%> </font></H3>
+
+<%= error_messages_for 'extract_param' %>
+ <% fields_for :extract_param do |extract_param| %>
+
+<table border=1 >
+
+
+<tr><td>Filename</td><td>
+<%= extract_param.text_field :filename, :size => 15  %>.pXML</td><td>Required and no spaces! </td></tr>
+
+<tr><td><label for="extract_param_F">F</label></td><td>
+<%= extract_param.text_field :F, :size => 10  %></td><td>Lower Scan Limit (Leave blank for auto)</td></tr>
+
+<tr><td><label for="extract_param_L">L</label></td><td>
+<%= extract_param.text_field :L, {:size => 10 }  %></td><td>Upper Scan Limit</td></tr>
+
+
+<tr><td><label for="extract_param_B">B</label></td><td>
+<%= extract_param.text_field :B, {:size => 10 }   %></td><td>Bottom Mass Range for datafile</td></tr>
+
+<tr><td><label for="extract_param_T">T</label></td><td>
+<%= extract_param.text_field :T, {:size => 10 }  %></td><td>Top Mass Range for datafile</td></tr>
+
+<tr><td><label for="extract_param_M">M*</label></td><td>
+<%= extract_param.text_field :M, {:size => 10 }   %></td><td>Precursor Mass tolerance for grouping</td></tr>
+
+<tr><td><label for="extract_param_S">S*</label></td><td>
+<%= extract_param.text_field :S , {:size => 10 }  %></td><td>num allowed diff intermediate scans for grouping</td></tr>
+
+<tr><td><label for="extract_param_G">G*</label></td><td>
+<%= extract_param.text_field :G, {:size => 10 }   %></td><td> min num of related group scans needed for dta file</td></tr>
+
+<tr><td><label for="extract_param_I">I</label></td><td>
+<%= extract_param.text_field :I, {:size => 10 }   %></td><td>min num of ions needed for dta file</td></tr>
+
+<tr><td><label for="extract_param_A">A*</label></td><td>
+<%= extract_param.text_field :A, {:size => 15 }   %></td><td>control string with the following options:<BR>
+<table border="0" cell_spacing="3">
+<tr><td>T: use template</td><td>F: use Discrete Fourier transform</td></tr>
+<tr><td>E: use Eng's Algo.</td><td>H: use scan header</td></tr>
+<tr><td>M: use MSMS count</td><td>&nbsp;</td></tr>
+<tr><td>S: create summary file</td><td>L: create log file</td></tr>
+<tr><td>D: create both files</td><td>C: create MSMS count file</td></tr>
+<tr><td colspan="2">A: find CS even for nonzero numbers</td></tr>
+<tr><td colspan="2">tfehm: include algorithm output in summary file even if not called </td></tr>
+
+</table>
+
+
+</td></tr>
+
+<tr><td><label for="extract_param_R">R*</label></td><td>
+<%= extract_param.text_field :R, {:size => 10 }   %></td><td>min signal-to-noise meeded for a peak to be written to dta file</td></tr>
+
+<tr><td colspan="3">* These fields are not used in the current configuration because Decon Msn does not need them.</td></tr>
+
+
+
+</table>
+
+
+<% end %>

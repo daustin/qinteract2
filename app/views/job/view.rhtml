@@ -1,0 +1,36 @@
+
+Qsub: <%= @job.qsub_id -%><BR>
+Cmd: <%= @job.qsub_cmd -%><BR>
+Started on: <%= @job.created_at -%> <BR>
+<HR>
+
+<%= link_to_remote("Output", :loading => "load_div_image('jobSubPane')", 
+:url => { :controller => "job", :action => "output", :id => @job.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobSubPane" )%> | 
+
+<%= link_to_remote("Script", :loading => "load_div_image('jobSubPane')", 
+:url => { :controller => "job", :action => "script", :id => @job.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobSubPane" )%> | 
+
+<%= link_to_remote("Settings", :loading => "load_div_image('jobSubPane')", 
+:url => { :controller => "job", :action => "settings", :id => @job.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobSubPane" )%> | 
+
+<%= link_to_remote("PBS Info", :loading => "load_div_image('jobSubPane')", 
+:url => { :controller => "job", :action => "pbsinfo", :id => @job.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "jobSubPane" )%> | 
+
+<div id="jobSubPane">
+<P class="jobSubPane">
+<PRE>
+<%= @job.output %>
+</PRE>
+</P>
+</div>
+
+
+</div>

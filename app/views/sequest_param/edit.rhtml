@@ -1,0 +1,289 @@
+<HTML>
+<HEAD>
+ <title><%= @page_title %></title>
+  <%= stylesheet_link_tag 'scaffold' %>
+ <%= javascript_include_tag :defaults %>
+   <%= javascript_include_tag "loadimage" %>  
+</HEAD>
+<BODY>
+
+
+<H1> Sequest Params Form </H1>
+
+<H3><font color=red><%= flash[:notice] -%> <%= error_messages_for 'sequest_param' %></font></H3>
+
+<% form_for( :sequest_param, :url => { :action => 'update' }, :html => { :name => "newObjectForm" }) do |sequest_param|%>
+
+<table border=1 class="new_sequest_param_form" cell_spacing="0">
+<tr><td>
+
+<label for="sequest_param_filename">Filename</label></td><td>
+<%= hidden_field_tag 'id', @sequest_param.id  -%>
+<%= sequest_param.hidden_field :filename -%>
+<%= @sequest_param.filename %>.params
+<%= sequest_param.hidden_field :create_output_files %>
+</td></tr>
+
+<tr bgcolor="#CFFFFF"><td><b>General Settings</b></td><td><HR></td></tr>
+
+<tr><td><label for="sequest_param_first_database_name">First Database</label></td><td>
+<%= sequest_param.select(:first_database_name, [['--Select Protein Database--',  '']].concat(@protdb))  %></td></tr>
+<tr><td><label for="sequest_param_second_database_name">Second Database</label></td><td>
+<%= sequest_param.select(:second_database_name, [['--Select Protein Database--',  '']].concat(@protdb))  %></td></tr>
+
+
+<tr><td><label for="sequest_param_nucleotide_reading_frame">Reading Frame Type</label></td><td>
+<%= sequest_param.radio_button :nucleotide_reading_frame, "0", {:checked=>"checked"}%> Protein  
+<%= sequest_param.radio_button :nucleotide_reading_frame, "9"%> Nucleotide  
+</td></tr>
+
+<tr><td><label for="sequest_param_mass_type_parent">Precursor Mass Type</label></td><td>
+<%= sequest_param.radio_button :mass_type_parent, "0",  {:checked=>"checked"}%> Average  
+<%= sequest_param.radio_button :mass_type_parent, "1"%> Monoiosotopic  
+</td></tr>
+
+<tr><td><label for="sequest_param_mass_type_fragment">Fragments Mass Type</label></td><td>
+<%= sequest_param.radio_button :mass_type_fragment, "0",  {:checked=>"checked"}%> Average  
+<%= sequest_param.radio_button :mass_type_fragment, "1"%> Monoiosotopic  
+</td></tr>
+
+<tr><td><label for="sequest_param_enzyme_info">Enzyme</label></td><td>
+<%= sequest_param.select(:enzyme_info, @sequest_param.enzymes)  %></td></tr>
+
+<tr><td><label for="sequest_param_enzyme_limits">Enzyme Limits</label></td><td>
+<%= sequest_param.select(:enzyme_limits, [["Fully Enzymatic - cleave at both ends", "1"],
+	["Partially Enzymatic - cleave at either end","2"], ["N-Term cleavage only","3"],[ "C-Term cleavage only","4"]])  %></td></tr>
+
+
+<tr><td><label for="sequest_param_max_num_internal_cleavage_sites">Missed Cleavage Sites</label></td><td>
+<%= sequest_param.text_field :max_num_internal_cleavage_sites, {:size=>"15"}  %></td></tr>
+
+<tr><td><label for="sequest_param_peptide_mass_tolerance">Peptide Mass Tolerance</label></td><td>
+<%= sequest_param.text_field :peptide_mass_tolerance,{:size=>"15"}   %>
+<label for="sequest_param_peptide_mass_units"></label>
+<%= sequest_param.radio_button :peptide_mass_units, "0", {:checked=>"checked"} %> AMU  
+<%= sequest_param.radio_button :peptide_mass_units, "1"%> MMU  
+<%= sequest_param.radio_button :peptide_mass_units, "2"%> PPM  
+</td></tr>
+
+
+<tr><td><label for="sequest_param_fragment_ion_tolerance">Fragment Ion Tolerance</label></td><td>
+<%= sequest_param.text_field :fragment_ion_tolerance, {:size=>"15"}  %></td></tr>
+
+<tr><td><label for="sequest_param_num_results">Number Results Scored</label></td><td>
+<%= sequest_param.text_field :num_results, {:size=>"15"}  %></td></tr>
+
+
+<tr><td>Ion Series</td>
+
+<td>
+
+<%= sequest_param.check_box(:ion_series_A)  %>
+<label for="sequest_param_ion_series_A">A Ions</label>
+<%= sequest_param.check_box(:ion_series_B)  %>
+<label for="sequest_param_ion_series_B">B Ions</label>
+<%= sequest_param.check_box(:ion_series_C)  %>
+<label for="sequest_param_ion_series_C">C Ions</label>
+<%= sequest_param.check_box(:ion_series_Y)  %>
+<label for="sequest_param_ion_series_Y">Y Ions</label>
+<%= sequest_param.check_box(:ion_series_Z)  %>
+<label for="sequest_param_ion_series_Z">Z Ions</label>
+</tr>
+
+
+<tr bgcolor="#CCFFFF"><td><b>Output Options</b></td><td><HR></td></tr>
+
+
+<tr><td><label for="sequest_param_num_output_lines">Peptide Matches Reported</label></td><td>
+<%= sequest_param.text_field :num_output_lines, {:size=>"15"}  %></td></tr>
+
+<tr><td><label for="sequest_param_print_duplicate_references">Report Duplicate References</label></td><td>
+<%= sequest_param.text_field :print_duplicate_references, {:size=>"15"}  %></td></tr>
+
+<tr bgcolor="#CCFFCC"><td><b>Additional Settings</b></td><td><HR></td></tr>
+
+<tr><td><label for="sequest_param_num_description_lines">Num full Protein Descriptions</label></td><td>
+<%= sequest_param.text_field :num_description_lines, {:value=>"5", :size=>"15"}  %></td></tr>
+
+
+<tr><td><label for="sequest_param_show_fragment_ions">Show Fragment Ions</label></td><td>
+<%= sequest_param.radio_button :show_fragment_ions, "0"%> No  
+<%= sequest_param.radio_button :show_fragment_ions, "1"%> Yes  
+</td></tr>
+
+<tr><td><label for="sequest_param_normalize_xcorr">Normalize XCorr Values</label></td><td>
+<%= sequest_param.text_field :normalize_xcorr,  {:size=>"15"}  %></td></tr>
+
+<tr><td><label for="sequest_param_remove_precursor_peak">Remove Precursor Peak</label></td><td>
+<%= sequest_param.radio_button :remove_precursor_peak, "0"%> No  
+<%= sequest_param.radio_button :remove_precursor_peak, "1"%> Yes  
+</td></tr>
+
+
+<tr><td><label for="sequest_param_ion_cutoff_percentage">Ion Cutoff Percentage</label></td><td>
+<%= sequest_param.text_field :ion_cutoff_percentage, {:size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_param_protein_mass_filter">Protein Mass Filter</label></td><td>
+<%= sequest_param.text_field :protein_mass_filter, {:size=>"15"}   %>(Enter min and max values spearated by 
+a space. 0 0 is disabled</td></tr>
+
+<tr><td><label for="sequest_param_match_peak_count">Num of Peaks to Match</label></td><td>
+<%= sequest_param.text_field :match_peak_count, {:size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_param_match_peak_allowed_error">Num of Allowed Peak Match Errors</label></td><td>
+<%= sequest_param.text_field :match_peak_allowed_error, {:size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_param_match_peak_tolerance">Match Peak Mass Tolerance</label></td><td>
+<%= sequest_param.text_field :match_peak_tolerance, {:size=>"15"}   %></td></tr>
+
+<tr bgcolor="#CCFF99"><td><b>Differential Mass Modifications</b></td><td><HR></td></tr>
+
+<tr><td><label for="sequest_params_max_num_differential_per_peptide">PTMs Per Peptide</label></td><td>
+<%= sequest_param.text_field :max_num_differential_per_peptide, {:size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_term_diff_search_options_C">C Term Peptide</label></td><td>
+<%= sequest_param.text_field :term_diff_search_options_C, {:size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_term_diff_search_options_N">N Term Peptide</label></td><td>
+<%= sequest_param.text_field :term_diff_search_options_N, {:size=>"15"}   %></td></tr>
+
+<tr><td>Other Mass Mods</td><td>
+<table border="0" cellspacing="0" cellpadding="3">
+<tr bgcolor="#CCFF99">
+	<td>Label</td>
+	<td>Mass</td>
+</tr>
+
+<tr><td><%= sequest_param.text_field :diff_search_options_1_label, { :size=>"15"}   %></td><td>
+<%= sequest_param.text_field :diff_search_options_1_mass, {:size=>"15"}   %></td></tr>
+
+<tr><td><%= sequest_param.text_field :diff_search_options_2_label, { :size=>"15"}   %></td><td>
+<%= sequest_param.text_field :diff_search_options_2_mass, { :size=>"15"}   %></td></tr>
+
+<tr><td><%= sequest_param.text_field :diff_search_options_3_label, { :size=>"15"}   %></td><td>
+<%= sequest_param.text_field :diff_search_options_3_mass, { :size=>"15"}  %></td></tr>
+
+<tr><td><%= sequest_param.text_field :diff_search_options_4_label, { :size=>"15"}   %></td><td>
+<%= sequest_param.text_field :diff_search_options_4_mass, { :size=>"15"}   %></td></tr>
+
+<tr><td><%= sequest_param.text_field :diff_search_options_5_label, { :size=>"15"}   %></td><td>
+<%= sequest_param.text_field :diff_search_options_5_mass, { :size=>"15"}   %></td></tr>
+
+<tr><td><%= sequest_param.text_field :diff_search_options_6_label, { :size=>"15"}   %></td><td>
+<%= sequest_param.text_field :diff_search_options_6_mass, { :size=>"15"}  %></td></tr>
+
+
+</table>
+
+<tr bgcolor="#FFCCFF"><td><b>Static Mass Modifications</b></td><td><HR></td></tr>
+
+<tr><td><label for="sequest_params_add_Cterm_peptide">C Term Peptide</label></td><td>
+<%= sequest_param.text_field :add_Cterm_peptide, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_Cterm_protein">C Term Protein</label></td><td>
+<%= sequest_param.text_field :add_Cterm_protein, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_Nterm_peptide">N Term Peptide</label></td><td>
+<%= sequest_param.text_field :add_Nterm_peptide, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_Nterm_protein">N Term Protein</label></td><td>
+<%= sequest_param.text_field :add_Nterm_protein, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_Nterm_protein">N Term Protein</label></td><td>
+<%= sequest_param.text_field :add_Nterm_protein, { :size=>"15"}   %></td></tr>
+
+
+<tr><td><label for="sequest_params_add_A_Alanine">A - Alanine</label></td><td>
+<%= sequest_param.text_field :add_A_Alanine, {:size=>"15"}  %></td></tr>
+
+<tr><td><label for="sequest_params_add_C_Cysteine">C - Cysteine</label></td><td>
+<%= sequest_param.text_field :add_C_Cysteine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_D_Aspartic_Acid">D - Aspartic Acid</label></td><td>
+<%= sequest_param.text_field :add_D_Aspartic_Acid, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_E_Glutamic_Acid">E - Glutamic Acid</label></td><td>
+<%= sequest_param.text_field :add_E_Glutamic_Acid, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_F_Phenylalanine">F - Phenylalanine</label></td><td>
+<%= sequest_param.text_field :add_F_Phenylalanine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_G_Glycine">G - Glycine</label></td><td>
+<%= sequest_param.text_field :add_G_Glycine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_H_Histidine">H - Histidine</label></td><td>
+<%= sequest_param.text_field :add_H_Histidine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_I_Isoleucine">I - Isoleucine</label></td><td>
+<%= sequest_param.text_field :add_I_Isoleucine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_K_Lysine">K - Lysine</label></td><td>
+<%= sequest_param.text_field :add_K_Lysine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_L_Leucine">L - Leucine</label></td><td>
+<%= sequest_param.text_field :add_L_Leucine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_M_Methionine">M - Methionine</label></td><td>
+<%= sequest_param.text_field :add_M_Methionine, { :size=>"15"}  %></td></tr>
+
+<tr><td><label for="sequest_params_add_N_Asparagine">N - Asparagine</label></td><td>
+<%= sequest_param.text_field :add_N_Asparagine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_O_Ornithine">O - Ornithine</label></td><td>
+<%= sequest_param.text_field :add_O_Ornithine, { :size=>"15"}  %></td></tr>
+
+<tr><td><label for="sequest_params_add_P_Proline">P - Proline</label></td><td>
+<%= sequest_param.text_field :add_P_Proline, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_Q_Glutamine">Q - Glutamine</label></td><td>
+<%= sequest_param.text_field :add_Q_Glutamine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_R_Arginine">R - Arginine</label></td><td>
+<%= sequest_param.text_field :add_R_Arginine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_S_Serine">S - Serine</label></td><td>
+<%= sequest_param.text_field :add_S_Serine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_T_Threonine">T - Threonine</label></td><td>
+<%= sequest_param.text_field :add_T_Threonine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_V_Valine">V - Valine</label></td><td>
+<%= sequest_param.text_field :add_V_Valine, { :size=>"15"} %></td></tr>
+
+<tr><td><label for="sequest_params_add_W_Tryptophan">W - Tryptophan</label></td><td>
+<%= sequest_param.text_field :add_W_Tryptophan, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_Y_Tyrosine">Y - Tyrosine</label></td><td>
+<%= sequest_param.text_field :add_Y_Tyrosine, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_B_avg_NandD">B - average of N &amp; D</label></td><td>
+<%= sequest_param.text_field :add_B_avg_NandD, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_X_LorI">X - L or I</label></td><td>
+<%= sequest_param.text_field :add_X_LorI, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_Z_avg_QandE">Z - average of Q &amp; E</label></td><td>
+<%= sequest_param.text_field :add_Z_avg_QandE, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_J_user_amino_acid">J - user defined amino acid</label></td><td>
+<%= sequest_param.text_field :add_J_user_amino_acid, { :size=>"15"}   %></td></tr>
+
+<tr><td><label for="sequest_params_add_U_user_amino_acid">U - user defined amino acid</label></td><td>
+<%= sequest_param.text_field :add_U_user_amino_acid, { :size=>"15"}   %></td></tr>
+
+
+</table>
+
+
+
+
+</td></tr>
+
+
+</table>
+
+ <%= submit_tag "Save" %>
+<% end %>
+
+</BODY>
+</HTML>

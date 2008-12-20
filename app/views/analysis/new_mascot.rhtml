@@ -1,0 +1,142 @@
+<h1>Start a new Mascot Search & Analysis</h1>
+
+<% form_tag( "/qInteract2/analysis/new_mascot/#{@pipeline_project.id}") do %>
+Import settings from other job (Optional - Enter QsubId):  <BR>
+<%= text_field_tag 'qsubid', @qsubid,  { :size => 5 } %> 
+<%= submit_tag "Import Now" %>
+<% end %>
+<BR>
+
+
+<% form_for( :pipeline_analysis, :url => { :action => 'create_mascot' }) do |pipeline_analysis| %>
+
+<%= error_messages_for 'pipeline_analysis' %>
+<%= error_messages_for 'job' %>
+<%= error_messages_for 'mascot_search' %>
+<%= error_messages_for 'analysis_setting' %>
+<%= error_messages_for 'mscluster_filter' %>
+<%= error_messages_for 'extract_dta' %>
+
+<!--[form:pipeline_analysis]-->
+<table border=1 class="new_search_form">
+<tr><td>
+<label for="pipeline_analysis_name">Analysis name</label></td><td>
+<%= pipeline_analysis.text_field :name  %>
+<%= pipeline_analysis.hidden_field :pipeline_project_id %>
+</td></tr>
+
+<tr><td>
+<label for="pipeline_analysis_owner">Username</label></td><td>
+<%= pipeline_analysis.text_field :owner  %></td></tr>
+
+<!--[eoform:pipeline_analysis]-->
+ 
+<% fields_for :job do |job| %>
+<!--[form:job]-->
+<tr><td>
+<label for="job_notify_email">Notify email</label></td><td>
+<%= job.text_field :notify_email  %></td></tr>
+
+
+<!--[eoform:job]-->
+
+<% end %>
+
+ 
+
+</table>
+
+<!--[form:mascot_setting]-->
+<table border=1 class="new_mascot_form">
+<TR><th colspan="2">
+Choose Input files
+</th>
+
+</TR>
+
+ 
+<% fields_for :mascot_search do |mascot_search| %>
+
+<tr><td><label for="mascot_search_raw_dir">Select a Raw
+dir<BR>(Click on name to drill down)</label><BR><BR>-or-<BR><BR>
+
+<%= link_to_remote("Import from LIMS",
+:loading => "load_div_image('inputs_div')", 
+ :url => { :controller => "lims", :action => :list },
+:failure => "alert('HTTP Error ' + request.status + '!')", :update => "inputs_div" )%>
+
+</td>
+<td nowrap><div id="inputs_div">
+
+<% @raw_dirs.each do |dir| %>
+
+<div id="<%= dir.rel_path%>">
+<%= mascot_search.radio_button :raw_dir, dir.rel_path %>
+<%= link_to_remote(dir.dir_name,
+:loading => "load_div_image('"+dir.rel_path+"')", 
+ :url => { :action => :load_dir, :rel => dir.rel_path },
+:failure => "alert('HTTP Error ' + request.status + '!')",:update => dir.rel_path )%>
+</div>
+
+<% end %>
+
+</div>
+
+</td></tr>
+
+<% end %>
+ 
+
+<TR><th colspan="2">Extract Settings</th></TR>
+
+
+<tr><td colspan="2">
+
+
+ <%= render :partial => 'extract_dta_form' %>
+
+
+
+</td></tr>
+
+<TR><th colspan="2">Dta Filtering</th></TR>
+<tr><td colspan="2">
+<%= render :partial => 'mscluster_form' %>
+
+
+</td></tr>
+
+
+<TR><th colspan="2">Mascot Search Settings</th></TR>
+<tr> <td colspan="2">
+
+<%= render :partial => 'mascot_form' %>
+
+</td></tr>
+
+<TR><th colspan="2">Analysis Settings</th></TR>
+<tr> <td colspan="2">
+
+<%= render :partial => 'analysis_form' %>
+
+</td></tr>
+
+
+</table>
+<BR><BR>
+<!--[eoform:mascot_setting]-->
+
+<!--[form:analysis_setting]-->
+
+
+<!--[eoform:analysis_setting]-->
+
+
+
+
+
+ 
+  <%= submit_tag "Create" %>
+<% end %>
+
+<%= link_to 'Back', :action => 'list' %>

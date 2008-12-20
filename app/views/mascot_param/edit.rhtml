@@ -1,0 +1,202 @@
+<HTML>
+<HEAD>
+ <title><%= @page_title %></title>
+  <%= stylesheet_link_tag 'scaffold' %>
+ <%= javascript_include_tag :defaults %>
+   <%= javascript_include_tag "loadimage" %>  
+</HEAD>
+<BODY onLoad="parseMods()">
+
+
+
+<H1> Edit Existing Mascot Params Form </H1>
+
+<H3><font color=red><%= flash[:notice] -%> <%= error_messages_for 'mascot_param' %> </font></H3>
+
+
+<% form_for :mascot_param, :url => { :action => 'update' }, :html => { :onSubmit => "addMods()", :name => "newObjectForm" } do |mascot_param| %>
+
+<table border=1 class="new_mascot_param_form" cell_spacing="0">
+<tr><td>
+
+<label for="mascot_param_filename">Filename</label></td><td>
+<%= hidden_field_tag 'id', @mascot_param.id  -%>
+<%= @mascot_param.filename  %>.par
+<%= mascot_param.hidden_field :filename  %>
+</td></tr>
+
+<tr bgcolor="#CFFFFF"><td><b>All Search Settings</b></td><td><HR></td></tr>
+
+<tr><td><label for="mascot_param_USERNAME">Username</label></td><td>
+<%= mascot_param.text_field :USERNAME, :size=>"25"  %></td></tr>
+
+<tr><td><label for="mascot_param_USEREMAIL">Email</label></td><td>
+<%= mascot_param.text_field :USEREMAIL, :size=>"25"  %></td></tr>
+
+<tr><td><label for="mascot_param_COM">Search Title</label></td><td>
+<%= mascot_param.text_field :COM, :size=>"50"  %></td></tr>
+
+<tr><td><label for="mascot_param_TAXONOMY">Taxonomy</label></td><td>
+<%= mascot_param.select(:TAXONOMY, @taxonomy)  %></td></tr>
+
+<tr><td><label for="mascot_param_REPORT">Report Top</label></td><td>
+<%= mascot_param.select(:REPORT, ['AUTO','5','10','20','30','50','100','200'])  %>hits</td></tr>
+
+<tr><td><label for="mascot_param_DB">Database</label></td><td>
+<%= mascot_param.select(:DB, @databases)  %></td></tr>
+
+<tr><td><label for="mascot_param_CLE">Enzyme</label></td><td>
+<%= mascot_param.select(:CLE, @enzymes)  %></td></tr>
+
+<tr><td><label for="mascot_param_PFA">Max missed Cleavages</label></td><td>
+<%= mascot_param.select(:PFA, ['0','1','2','3','4','5','6','7','8','9'])  %></td></tr>
+
+<tr><td><label for="mascot_param_MODS">Fixed Modifications</label></td><td>
+<%= select_tag('modlist', options_for_select(@mods), {:multiple => "true"})  %>
+<%= mascot_param.hidden_field :MODS, {:value => "{@mascot_param.MODS}"} %>
+</td></tr>
+
+<tr><td><label for="mascot_param_IT_MODS">Variable Modifications</label></td><td>
+<%= select_tag('itmodlist', options_for_select(@mods), {:multiple => "true"})  %>
+<%= mascot_param.hidden_field :IT_MODS, {:value => "#{@mascot_param.IT_MODS}"} %>
+</td></tr>
+
+<tr><td><label for="mascot_param_MASS">Mass Type</label></td><td>
+<%= mascot_param.radio_button :MASS, "Average"  %> Average  
+<%= mascot_param.radio_button :MASS, "Monoisotopic"%> Monoisotopic
+</td></tr>
+
+<tr><td><label for="mascot_param_SEG">Protein Mass</label></td><td>
+<%= mascot_param.text_field :SEG, {:size=>"12"}  %>kDa</td></tr>
+
+<tr><td><label for="mascot_param_TOL">Peptide tol. &plusmn;</label></td><td>
+<%= text_field 'mascot_param', 'TOL', {:size=>"12"}  %>
+<%= select('mascot_param', 'TOLU', ['Da','mmu','%','ppm'])  %>
+
+</td></tr>
+
+<tr><td><label for="mascot_param_CHARGE">Peptide Charge</label></td><td>
+<%= mascot_param.select(:CHARGE, ['Mr','1+','1+,2+ and 3+','2+','2+ and 3+','3+','4+','5+','6+','7+','8+'])%></td></tr>
+
+
+<tr bgcolor="#CCFFFF"><td><b>MS/MS Options</b></td><td><HR></td></tr>
+
+<tr><td><label for="mascot_param_FORMAT">Data Format</label></td><td>
+<%= mascot_param.select(:FORMAT, ['Mascot generic','Sequest (.DTA)','Finnigan (.ASL)','Micromass (.PKL)','PerSeptive (.PKS)','Sciex API III','Brucker (.XML)','mxData (.XML)'])  %></td></tr>
+
+<tr><td><label for="mascot_param_REPTYPE">Type</label></td><td>
+<%= mascot_param.radio_button :REPTYPE, "Protein"%> Protein  
+<%= mascot_param.radio_button :REPTYPE, "Peptide"%> Peptide
+</td></tr>
+
+<tr><td><label for="mascot_param_PRECURSOR">Precursor m/z</label></td><td>
+<%= mascot_param.text_field :PRECURSOR, {:size=>"12"}  %></td></tr>
+
+<tr><td><label for="mascot_param_ITOL">MS/MS tol. &plusmn;</label></td><td>
+<%= mascot_param.text_field :ITOL, {:size=>"12"}  %>
+<%= mascot_param.select(:ITOLU, ['Da','mmu'])  %>
+
+</td></tr>
+
+<tr><td><label for="mascot_param_ICAT">ICAT</label></td><td>
+<%= mascot_param.check_box :ICAT, {}, "ON", ""%>
+</td></tr>
+
+<tr><td><label for="mascot_param_INSTRUMENT">Instrument</label></td><td>
+<%= mascot_param.select(:INSTRUMENT, @instruments)  %></td></tr>
+
+
+</table>
+
+ <%= submit_tag "Save" %>
+<% end %>
+
+
+<script>
+
+function parseMods(){
+
+fixedmods = "<%= @mascot_param.MODS -%>";
+variablemods = "<%= @mascot_param.IT_MODS -%>";
+var mods = window.document.newObjectForm.modlist; 
+
+var optionCounter; 
+
+
+for (optionCounter = 0; optionCounter < modlist.length; optionCounter++) 
+{ 
+	if (fixedmods.indexOf(modlist.options[optionCounter].value) > -1){
+	      modlist.options[optionCounter].selected=true;
+	}
+
+
+}
+
+mods = window.document.newObjectForm.itmodlist; 
+
+optionCounter = 0; 
+
+for (optionCounter = 0; optionCounter < itmodlist.length; optionCounter++) 
+{ 
+	if (variablemods.indexOf(itmodlist.options[optionCounter].value) > -1){
+	      itmodlist.options[optionCounter].selected=true;
+	}
+
+}
+
+
+
+
+}
+
+function addMods(){
+
+
+var mods = window.document.newObjectForm.modlist; 
+
+var optionCounter; 
+
+document.getElementById('mascot_param_MODS').value = ''
+document.getElementById('mascot_param_IT_MODS').value = ''
+
+for (optionCounter = 0; optionCounter < modlist.length; optionCounter++) 
+{ 
+	if (modlist.options[optionCounter].selected == true){
+	     document.getElementById('mascot_param_MODS').value += modlist.options[optionCounter].value+','
+	}
+
+}
+
+
+
+
+mods = window.document.newObjectForm.itmodlist; 
+
+optionCounter = 0; 
+
+for (optionCounter = 0; optionCounter < itmodlist.length; optionCounter++) 
+{ 
+	if (itmodlist.options[optionCounter].selected == true){
+	      document.getElementById('mascot_param_IT_MODS').value += itmodlist.options[optionCounter].value+','
+	}
+
+}
+
+l = document.getElementById('mascot_param_MODS').value.length
+
+document.getElementById('mascot_param_MODS').value = document.getElementById('mascot_param_MODS').value.substring(0,l-1)
+
+l = document.getElementById('mascot_param_IT_MODS').value.length
+
+document.getElementById('mascot_param_IT_MODS').value = document.getElementById('mascot_param_IT_MODS').value.substring(0,l-1)
+
+
+}
+
+
+</script>
+
+
+
+</BODY>
+</HTML>

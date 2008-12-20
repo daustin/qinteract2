@@ -1,0 +1,37 @@
+<INPUT TYPE="HIDDEN" NAME="LIMS" VALUE="1">
+
+<table border=1 cellspacing=0>
+<TR><TH>Title</TH><TH>Open Date</TH></TR>
+<% for project in @projects -%>
+
+<TR>
+<TD  valign="top">
+
+<%= link_to_remote("#{project.name}",
+:loading => "load_div_image('P#{project.id}')", 
+:url => { :action => :files, :id => project.id },
+
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "P#{project.id}" )%>
+
+
+<div id="P<%= project.id -%>">
+
+
+</div>
+
+</TD><TD valign="top" ><%= project.created_at -%></TD></TR>
+
+
+<% end -%>
+
+<% if @projects.empty? -%>
+
+<TR><TD colspan=3><b>No projects found.</b></TD></TR>
+
+<% end -%>
+
+
+</table>
+
+

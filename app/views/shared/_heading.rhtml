@@ -1,0 +1,18 @@
+<table width="830" border="0" cellspacing="0">
+  <tr> 
+    <td><%= image_tag("qinteract_banner.jpg", :size => "830x59") %></td>
+  </tr>
+  <tr> 
+    <td align="right" bgcolor="#999966"> <p><font color="#FFFFFF"><strong><font size="2" face="Verdana, Arial, Helvetica, sans-serif">
+ <%= link_to "Home", { :controller => "main", :action => "index"} %> | 
+<%= link_to "Queue", { :controller => "main", :action => "current_queue"}, :popup => true, :popup => ['params_window', 'height=300,width=800,scrollbars,resizable,screenX=200,screenY=200,top=200,left=200']  %>
+        | 
+<%= link_to "Searches & Analyses", { :controller => "project", :action => "list"} %> | 
+
+<%= link_to "Logout", { :controller => "main", :action => "logout"} %> |
+
+<%= link_to "Help Document", "/qInteractReference.pdf" %> 
+</font></strong> 
+        </font></p></td>
+  </tr>
+</table>

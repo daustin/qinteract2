@@ -1,0 +1,596 @@
+<html>
+<head>
+  <title><%= @page_title %></title>
+  <%= stylesheet_link_tag 'scaffold' %>
+ <%= javascript_include_tag :defaults %>
+   <%= javascript_include_tag "loadimage" %>
+
+</head>
+<body>
+
+<h1><font color="#993300">Select Pipeline Parameters </font></h1>
+<h2><strong><font color="#000099">xInteract Options</font></strong></h2>
+<form action="" method="post" name="xinteract" id="interact">
+  <h3>General</h3>
+
+  <p>
+    <input name="-dREV" type="checkbox" id="-dREV" value="-dREV"> -d [use for decoy REVERSED databases only; the decoy protein names must begin with REV]<BR> 
+    <input name="-p0" type="checkbox" id="-p0" value="-p0">
+    -p0 [do not discard search results with PeptideProphet probabilities below 
+    0.05]<br>
+    <input name="-mw" type="checkbox" id="-mw" value="-mw">
+    -mw [calculate protein molecular weights]<br>
+    <input name="-MONO" type="checkbox" id="-MONO" value="-MONO">
+    -MONO [calculate monoisotopic peptide masses during conversion to pepXML]<br>
+    <input name="-AVE" type="checkbox" id="-AVE" value="-AVE">
+
+    -AVE [calculate average peptide masses during conversion to pepXML]<br>
+    Enzyme: 
+    <select name="enzyme" id="enzyme">
+      <option selected value="">Trypsin</option>
+      <option value="-eC">Chymotrypsin</option>
+      <option value="-eA">AspN</option>
+      <option value="-eG">GluC</option>
+
+      <option value="-eB">GluC Bicarb</option>
+      <option value="-eM">CNBr</option>
+      <option value="-eD">Trypsin/CNBr</option>
+      <option value="-e3">Chrymotrypsin/AspN/Trypsin</option>
+      <option value="-eE">Elastase</option>
+      <option value="-eN">Nonspecific or None</option>
+
+    </select>
+    <br>    
+    <input name="-I" type="text" id="-I" value="" size="5"> -In [ignore charge n+] <br>
+    
+  </p>
+</form>
+<form action="" method="post" name="xpress" id="xpress">
+  <h3>XPress (Change corresponding ProteinProphet options as well)</h3>
+  <p> 
+    <input type="radio" name="RUNXPRESS" value="">
+    Run XPRESS<br>
+
+    <br>
+    <input name="-m" type="text" id="-m" size="10" value="1.0">
+    change XPRESS mass tolerance (default=1.0)<br>
+    <br>
+    1. Mass Diff Label: 
+    <input name="label1" type="text" id="label1" size="5">
+    Mass Diff: 
+    <input name="diff1" type="text" id="diff1" size="10">
+    <br>
+
+    2 . Mass Diff Label: 
+    <input name="label2" type="text" id="label2" size="5">
+    Mass Diff: 
+    <input name="diff2" type="text" id="diff2" size="10">
+    <br>
+    3 . Mass Diff Label: 
+    <input name="label3" type="text" id="label3" size="5">
+    Mass Diff: 
+    <input name="diff3" type="text" id="diff3" size="10">
+    <br>
+    4 . Mass Diff Label: 
+    <input name="label4" type="text" id="label4" size="5">
+
+    Mass Diff: 
+    <input name="diff4" type="text" id="diff4" size="10">
+    <br>
+    5 . Mass Diff Label: 
+    <input name="label5" type="text" id="label5" size="5">
+    Mass Diff: 
+    <input name="diff5" type="text" id="diff5" size="10">
+  </p>
+  <p> 
+    <input name="-b" type="checkbox" id="-b" value="-b">
+    -b heavy labeled peptide elutes before light labeled partner<br>
+
+    <input name="-L" type="checkbox" id="-L" value="-L">
+    -L for ratio, set/fix light to 1, vary heavy<br>
+    <input name="-H" type="checkbox" id="-H" value="-H">
+    -H for ratio, set/fix heavy to 1, vary light</p>
+</form>
+<form action="" method="post" name="asap" id="asap">
+  <h3>ASAP Ratio (Change corresponding ProteinProphet options as well)</h3>
+  <p>
+
+    <input type="radio" name="RUNASAPRATIO">
+    Run ASAP Ratio<br>
+    <br>
+    <input name="-l" type="text" id="-l" size="5">
+    -l change labeled residues (default='C')<br>
+    <input name="-f" type="text" id="-f" size="10">
+    -f areaFlag set to num (ratio display option)<br>
+
+    <input name="-m" type="text" id="-m" size="30">
+    -m specified label masses (e.g. M74.325Y125.864), only relevant for static 
+    modification quantification <br>
+    <input name="-S" type="checkbox" id="-S" value="-S">
+    -S static modification quantification (i.e. each run is either all light or 
+    all heavy) <br>
+    <input name="-b" type="checkbox" id="-b" value="-b">
+    -b heavy labeled peptide elutes before light labeled partner </p>
+  <p>&nbsp;</p>
+
+</form>
+<form action="" method="post" name="prophet" id="prophet">
+  <h2><strong><font color="#000099">Protein Prophet Options</font></strong></h2>
+  <p> 
+    <input name="DB_REFRESH" type="checkbox" id="DB_REFRESH" value="DB_REFRESH" checked>
+    DB_REFRESH: Refreshes results with given database<br>
+    <input name="MINPROB0.05" type="checkbox" id="MINPROB0.05" value="MINPROB0.05" checked>
+    MINPROB0.05: Excludes peptides with less than 0.05 probability<br>
+    <input name="EXCLUDE_ZEROS" type="checkbox" id="EXCLUDE_ZEROS" value="EXCLUDE_ZEROS" checked>
+
+    EXCLUDE_ZEROS: Excludes 0.0 probability peptides<br>
+
+    <input name="NOOCCAM" type="checkbox" id="NOOCCAM" value="NOOCCAM">
+    NOOCCAM: non-conservative maximum protein list<br>
+    <input name="ICAT" type="checkbox" id="ICAT" value="ICAT">
+    ICAT: highlight peptide cysteines<br>
+    <input name="GLYC" type="checkbox" id="GLYC" value="GLYC">
+    GLYC: highlight peptide N-glycosylation motif<br>
+
+    <input name="ACCURACY" type="checkbox" id="ACCURACY" value="ACCURACY">
+    ACCURACY: min pep prob 0<br>
+    <input name="REFRESH" type="checkbox" id="REFRESH" value="REFRESH">
+    REFRESH: import manual changes to ASAP ratios (after initially using ASAP 
+    option)<br>
+    <input name="XPRESS" type="checkbox" id="XPRESS" value="XPRESS">
+    XPRESS: Run XPRESS quantification<br>
+    <input name="ASAP_PROPHET" type="checkbox" id="ASAP_PROPHET" value="ASAP_PROPHET">
+
+    ASAP_PROPHET: *New and Improved* compute ASAP ratios for protein entries (ASAP 
+    must have been run previously on all input interact datasets with mz/XML raw 
+    data format)<br>
+    <input name="DELUDE" type="checkbox" id="DELUDE" value="DELUDE">
+    DELUDE: do NOT use peptide degeneracy information when assessing proteins<br>
+    <input name="HTML" type="checkbox" id="HTML" value="HTML">
+    HTML: write output to static html page (rather than dynamic shtml)</p>
+  <blockquote> 
+    <p> Other options in conjunction with HTML:<br>
+
+      <input name="EXCELPEPS" type="checkbox" id="EXCELPEPS" value="EXCELPEPS">
+      EXCELPEPS: write output tab delim xls file including all peptides<br>
+      <input name="EXCEL" type="text" id="EXCEL" size="10">
+      EXCELxx: write output tab delim xls file including all protein (group)s 
+      with minimum probability xx, where xx is a number between 0 and 1</p>
+  </blockquote>
+  <p>&nbsp;</p>
+</form>
+
+
+
+<form action="" method="post" name="ebp" id="ebp">
+  <h2><strong><font color="#000099">EBP Options</font></strong></h2>
+
+    <input name="-m" type="text" id="-m" value="0.05" size="7">
+    -m filter out peptide identifications with probabilities less than this value<br>
+    <input name="-b" type="text" id="-b" value="" size="7">
+    -b set abundance category threshold<br>
+    <input name="-c" type="text" id="-c" value=""size="7" >
+    -c initial value (or comma separated values) for gamma<br>
+
+    <input name="--nohom" type="checkbox" id="--nohom" value="--nohom" checked>
+    --nohom do not use homology-adjusted peptide probabilities<br>
+
+    <input name="--nolen" type="checkbox" id="--nolen" value="--nolen">
+    --nolen do not use length correction for protein probabilties<br>
+
+     <input name="-n" type="text" id="-n" value="" size="7">
+    -n lower bound for peptide probabilities (value between 0 and 1)<br>
+
+     <input name="-s" type="checkbox" id="-s" value="-s">
+    -s exclude STY modifications<br>
+
+    <input name="-v" type="checkbox" id="-v" value="-v">
+    -v using reverse-sequenced database search<br>
+
+      <input name="-P" type="text" id="-P" value="0.01" size="7">
+    -P minimum protein probability for output (value between 0 and 1)<br>
+
+     <input name="-Z" type="checkbox" id="-Z" value="-Z">
+    -Z exclude low probability proteins for output (p < 0.20)<br>
+
+   <input name="-V" type="checkbox" id="-V" value="-V">
+    -V verbose output<br>
+
+  <p>&nbsp;</p>
+</form>
+
+
+
+
+<!-- need to make this an ajax form to submit to a div -->
+
+
+<% form_remote_tag(:html => {:name => "submitForm"}, :update => '', :url => { :action => "create_params"},
+:before => "makeChanges()",
+:complete => "addToOpener(request.responseText)") do %>
+
+      <%= hidden_field_tag :xinteractoptions %>
+      <%= hidden_field_tag :prophetoptions %>
+      <%= hidden_field_tag :ebpoptions %>
+
+   <%= submit_tag "Submit Params" %> <input name="close" value="Close" type="button" onClick="javascript:self.close()">
+<% end %>
+
+<P>
+
+<div id="test">
+
+
+</div>
+<BR><BR>
+
+
+
+
+<!-- -->
+
+<Script>
+
+function addToOpener(str){
+window.opener.updateParams(str);
+
+
+}
+
+
+function makeChanges(){
+//call both build functions
+//edit parents form
+//close this window
+
+buildxInteractOptions();
+//alert(document.submitForm.xinteractoptions.value);
+buildProphetOptions();
+//alert(document.submitForm.prophetoptions.value);
+buildEbpOptions();
+
+
+
+}
+
+
+
+function buildEbpOptions(){
+
+
+//loop through elements
+//add all checkboxes to string
+//build and add all textboxes to string
+//set string
+
+var temp = '';
+
+for(var i=0; i<document.ebp.elements.length; i++){
+
+	
+	if (document.ebp.elements[i].type == "radio" && document.ebp.elements[i].checked == true){
+	
+		temp = temp + document.ebp.elements[i].value + ' ';
+	
+	
+	}else if (document.ebp.elements[i].type == "checkbox" && document.ebp.elements[i].checked == true){
+	
+		temp = temp + document.ebp.elements[i].value + ' ';
+	
+	
+	}else if (document.ebp.elements[i].type == "text" && Trim(document.ebp.elements[i].value)!=''){
+	
+		temp = temp + document.ebp.elements[i].name + document.ebp.elements[i].value + ' ';
+	
+	
+	}else if (document.ebp.elements[i].type == "select-one"){
+		
+		temp = temp + document.ebp.elements[i].options[document.ebp.elements[i].selectedIndex].value + ' ';
+	
+	
+	}else{
+	
+		//do nothing
+	
+	
+	}
+
+}
+
+
+
+
+document.submitForm.ebpoptions.value = temp;
+
+
+
+}
+
+function buildxInteractOptions(){
+
+//loop through elements
+//add all checkboxes to string
+//build and add all textboxes to string
+//set string
+
+var temp = '-Ol ';
+
+if (document.xinteract.elements[0].checked == true) {
+	temp = '-Old ';
+
+}
+
+
+for(var i=0; i<document.xinteract.elements.length; i++){
+
+	
+	if (document.xinteract.elements[i].type == "radio" && document.xinteract.elements[i].checked == true){
+	
+		temp = temp + document.xinteract.elements[i].value + ' ';
+	
+	
+	}else if (document.xinteract.elements[i].type == "checkbox" && document.xinteract.elements[i].checked == true){
+	
+		temp = temp + document.xinteract.elements[i].value + ' ';
+	
+	
+	}else if (document.xinteract.elements[i].type == "text" && Trim(document.xinteract.elements[i].value)!=''){
+	
+		temp = temp + document.xinteract.elements[i].name + document.xinteract.elements[i].value + ' ';
+	
+	
+	}else if (document.xinteract.elements[i].type == "select-one"){
+		
+		temp = temp + document.xinteract.elements[i].options[document.xinteract.elements[i].selectedIndex].value + ' ';
+	
+	
+	}else{
+	
+		//do nothing
+	
+	
+	}
+
+}
+
+
+//now we add both XPRESS and ASAP OPTIONS
+if (document.xpress.RUNXPRESS.checked == true){
+temp = temp + '-X';
+	for(var i=0; i<document.xpress.elements.length; i++){
+	
+		
+		
+		if (document.xpress.elements[i].type == "checkbox" && document.xpress.elements[i].checked == true){
+		
+			temp = temp + document.xpress.elements[i].value;
+		
+		
+		}else if (document.xpress.elements[i].name == "label1" && Trim(document.xpress.elements[i].value)!=''){
+		
+			temp = temp + '-n' + Trim(document.xpress.label1.value) + ',' + Trim(document.xpress.diff1.value) ;
+		
+		
+		}else if (document.xpress.elements[i].name == "label2" && Trim(document.xpress.elements[i].value)!=''){
+		
+			temp = temp + '-n' + Trim(document.xpress.label2.value) + ',' + Trim(document.xpress.diff2.value) ;
+		
+		
+		}else if (document.xpress.elements[i].name == "label3" && Trim(document.xpress.elements[i].value)!=''){
+		
+			temp = temp + '-n' + Trim(document.xpress.label3.value) + ',' + Trim(document.xpress.diff3.value) ;
+		
+		
+		}else if (document.xpress.elements[i].name == "label4" && Trim(document.xpress.elements[i].value)!=''){
+		
+			temp = temp + '-n' + Trim(document.xpress.label4.value) + ',' + Trim(document.xpress.diff4.value) ;
+		
+		
+		}else if (document.xpress.elements[i].name == "label5" && Trim(document.xpress.elements[i].value)!=''){
+		
+			temp = temp + '-n' + Trim(document.xpress.label5.value) + ',' + Trim(document.xpress.diff5.value) ;
+		
+		
+		}else if (document.xpress.elements[i].type == "text" && document.xpress.elements[i].name.indexOf('diff')>-1){
+			//do nothing	
+		
+		
+		}else if (document.xpress.elements[i].type == "text" && Trim(document.xpress.elements[i].value)!=''){
+		
+			temp = temp + document.xpress.elements[i].name + document.xpress.elements[i].value ;
+		
+		
+		}else if (document.xpress.elements[i].type == "select-one"){
+		
+			temp = temp + document.xpress.elements[i].options[document.xpress.elements[i].selectedIndex].value ;
+		
+		
+		}else{
+		
+			//do nothing
+		
+		
+		}
+	
+	}
+
+	temp = temp + ' ';
+
+}
+
+
+if (document.asap.RUNASAPRATIO.checked == true){
+temp = temp + '-A';
+	for(var i=0; i<document.asap.elements.length; i++){
+	
+		
+		
+		if (document.asap.elements[i].type == "checkbox" && document.asap.elements[i].checked == true){
+		
+			temp = temp + document.asap.elements[i].value;
+		
+		
+		}else if (document.asap.elements[i].name == "label1" && Trim(document.asap.elements[i].value)!=''){
+		
+			temp = temp + '-l' + Trim(document.asap.label1.value) + '-n' + Trim(document.asap.label1.value) + ',' + Trim(document.asap.diff1.value) ;
+		
+		
+		}else if (document.asap.elements[i].name == "label2" && Trim(document.asap.elements[i].value)!=''){
+		
+			temp = temp + '-l' + Trim(document.asap.label2.value) + '-n' + Trim(document.asap.label2.value) + ',' + Trim(document.asap.diff2.value) ;
+		
+		
+		}else if (document.asap.elements[i].name == "label3" && Trim(document.asap.elements[i].value)!=''){
+		
+			temp = temp + '-l' + Trim(document.asap.label3.value) + '-n' + Trim(document.asap.label3.value) + ',' + Trim(document.asap.diff3.value) ;
+		
+		
+		}else if (document.asap.elements[i].name == "label4" && Trim(document.asap.elements[i].value)!=''){
+		
+			temp = temp + '-l' + Trim(document.asap.label4.value) + '-n' + Trim(document.asap.label4.value) + ',' + Trim(document.asap.diff4.value) ;
+		
+		
+		}else if (document.asap.elements[i].name == "label5" && Trim(document.asap.elements[i].value)!=''){
+		
+			temp = temp + '-l' + Trim(document.asap.label5.value) + '-n' + Trim(document.asap.label5.value) + ',' + Trim(document.asap.diff5.value) ;
+		
+		
+		}else if (document.asap.elements[i].type == "text" && Trim(document.asap.elements[i].value)!=''){
+		
+			temp = temp + document.asap.elements[i].name + document.asap.elements[i].value ;
+		
+		
+		}else if (document.asap.elements[i].type == "select-one"){
+		
+			temp = temp + document.asap.elements[i].options[document.asap.elements[i].selectedIndex].value ;
+		
+		
+		}else{
+		
+			//do nothing
+		
+		
+		}
+	
+	}
+
+	temp = temp + ' ';
+
+}
+
+
+
+
+document.submitForm.xinteractoptions.value = temp;
+
+
+}
+
+function buildProphetOptions(){
+
+var temp = '';
+
+for(var i=0; i<document.prophet.elements.length; i++){
+
+	
+	if (document.prophet.elements[i].type == "radio" && document.prophet.elements[i].checked == true){
+	
+		temp = temp + document.prophet.elements[i].value + ' ';
+	
+	
+	}else if (document.prophet.elements[i].type == "checkbox" && document.prophet.elements[i].checked == true){
+	
+		temp = temp + document.prophet.elements[i].value + ' ';
+	
+	
+	}else if (document.prophet.elements[i].type == "text" && Trim(document.prophet.elements[i].value)!=''){
+	
+		temp = temp + document.prophet.elements[i].name + document.prophet.elements[i].value + ' ';
+	
+	
+	}else if (document.prophet.elements[i].type == "select-one"){
+		
+		temp = temp + document.prophet.elements[i].options[document.prophet.elements[i].selectedIndex].value + ' ';
+	
+	
+	}else{
+	
+		//do nothing
+	
+	
+	}
+
+}
+
+
+document.submitForm.prophetoptions.value = temp;
+
+
+}
+
+
+function Trim(TRIM_VALUE){
+if(TRIM_VALUE.length < 1){
+return "";
+}
+TRIM_VALUE = RTrim(TRIM_VALUE);
+TRIM_VALUE = LTrim(TRIM_VALUE);
+if(TRIM_VALUE==""){
+return "";
+}
+else{
+return TRIM_VALUE;
+}
+} //End Function
+
+function RTrim(VALUE){
+var w_space = String.fromCharCode(32);
+var v_length = VALUE.length;
+var strTemp = "";
+if(v_length < 0){
+return"";
+}
+var iTemp = v_length -1;
+
+while(iTemp > -1){
+if(VALUE.charAt(iTemp) == w_space){
+}
+else{
+strTemp = VALUE.substring(0,iTemp +1);
+break;
+}
+iTemp = iTemp-1;
+
+} //End While
+return strTemp;
+
+} //End Function
+
+function LTrim(VALUE){
+var w_space = String.fromCharCode(32);
+if(v_length < 1){
+return"";
+}
+var v_length = VALUE.length;
+var strTemp = "";
+
+var iTemp = 0;
+
+while(iTemp < v_length){
+if(VALUE.charAt(iTemp) == w_space){
+}
+else{
+strTemp = VALUE.substring(iTemp,v_length);
+break;
+}
+iTemp = iTemp + 1;
+} //End While
+return strTemp;
+} //End Function
+
+
+
+</Script>
+
+</body>
+</html>

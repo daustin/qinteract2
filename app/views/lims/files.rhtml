@@ -1,0 +1,16 @@
+<BR>
+  <UL>
+    <% if @files.empty? -%>
+    <LI><B>No Files Found</B></LI>
+    <% else -%>
+      <% for file in @files -%>
+      
+        <INPUT type="checkbox" name="rawfile[]" 
+          value="<%= File.join(@lims_path, file.filesystem_path, file.filesystem_name) -%>"  
+          checked />
+        <%= file.name %> <BR>
+        </li>
+      <% end -%>
+    <% end -%>
+</UL>
+

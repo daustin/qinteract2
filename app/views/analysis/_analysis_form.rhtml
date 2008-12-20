@@ -1,0 +1,68 @@
+<fieldset>
+
+<% fields_for :analysis_setting do |analysis| %>
+
+<table cell_padding="3" border=1 class="new_analysis_form" width="100%">
+<tr><td colspan="2">
+
+<%=  hidden_field_tag 'AnalysisOn', '1' %>
+
+<%= check_box_tag 'SeparateAnalysis', '1' %>Analyze each raw files separately</P>
+</td></tr>
+
+
+<tr><td><label for="analysis_setting_dataset_type">Dataset type</label></td><td>
+<%= analysis.select :dataset_type, @dataset_type  %></td></tr>
+
+<tr><td><label for="analysis_setting_prot_db">Prot db</label></td><td>
+<%= analysis.select :prot_db, [['--Select Protein Database--',  '']] + @protdb %></td></tr>
+
+<tr><td valign="top">
+Command Line Options
+
+</td>
+<td id="params_div">
+
+<%= link_to "Add Params", { :action => "add_params"}, :popup => true, :popup => ['params_window', 'height=300,width=600,scrollbars,resizable,screenX=200,screenY=200,top=200,left=200']  %><HR>
+
+<table border="0" cellspacing="3">
+<tr><td><label for="analysis_setting_xinteract_flags">Xinteract flags</label></td><td>
+<%= analysis.text_field :xinteract_flags  %></td></tr>
+
+<tr><td><label for="analysis_setting_prophet_flags">Prophet flags</label></td><td>
+<%= analysis.text_field :prophet_flags  %></td></tr>
+
+<tr><td><label for="analysis_setting_ebp_flags">Ebp flags</label></td><td>
+<%= analysis.text_field :ebp_flags %></td></tr>
+
+
+</table>
+
+</td>
+
+
+</tr>
+
+<tr><td><label for="analysis_setting_min_length">Minimum Peptide Length</label></td><td>
+<%= analysis.text_field :min_length, {:value => 5, :size=>3}  %>(5 is useful for large datasets)</td></tr>
+
+<tr><td><label for="analysis_setting_local_swap">Local swap</label></td><td>
+<%= check_box 'analysis_setting', 'local_swap' %>(Deprecated Leave UNCHECKED)</td></tr>
+
+
+</table>
+
+<% end %>
+
+</fieldset>
+
+<script>
+
+function updateParams(str){
+
+  document.getElementById('params_div').innerHTML = str
+  params_window.close();
+
+}
+
+</script>

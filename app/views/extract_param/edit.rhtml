@@ -1,0 +1,8 @@
+<h1>Editing extract_param</h1>
+
+<% form_for( :extract_param, :url => { :action => 'update', :id => @extract_param}) do |extract_param| %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Edit' %>
+<% end %>
+
+<A HREF="javascript:close()">back</A>

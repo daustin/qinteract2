@@ -1,0 +1,27 @@
+<BR><UL>
+<% for sample in @samples -%>
+
+<LI>
+
+
+<%= link_to_remote("#{sample.name}",
+:loading => "load_div_image('S#{sample.id}')", 
+ :url => { :action => :files, :id => sample.id },
+:failure => "alert('HTTP Error ' + request.status + '!')",
+:update => "S#{sample.id}" )%>
+
+<DIV id="S<%= sample.id-%>">
+
+
+</DIV></LI>
+
+
+<% end -%>
+
+
+<% if @samples.empty? -%>
+<LI><B>No Samples Found</B></LI>
+<% end -%>
+
+</UL>
+

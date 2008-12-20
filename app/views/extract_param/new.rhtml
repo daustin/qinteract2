@@ -1,0 +1,16 @@
+<h1>New extract params form</h1>
+
+
+<% form_for :extract_param, :url => { :action => :new} do |extract|  %>
+
+Fill out form below OR Copy Settings From:  <%= extract.select(:id, ExtractParam.find(:all).collect {|p| [ p.filename, p.id ] }, { :include_blank => true }) %> <%= submit_tag "Copy" %> </td></tr>
+<% end %>
+
+
+
+<% form_for :extract_param, :url => { :action => :create} do %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag "Create" %>
+<% end %>
+
+<A HREF="javascript:close()">Back</A>

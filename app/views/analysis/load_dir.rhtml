@@ -1,0 +1,28 @@
+
+<fieldset>
+
+
+<%= radio_button @setting, 'raw_dir', @cur_dir.rel_path %>
+<%= link_to_remote(@cur_dir.dir_name, :url => { :action => :load_dir, :id => @cur_dir.rel_path, :setting => @setting },
+:loading => "load_div_image('"+@cur_dir.rel_path+"')", 
+:failure => "alert('HTTP Error ' + request.status + '!')",:update => @cur_dir.rel_path )%>
+
+
+<% if ! @raw_dirs.empty? %>
+<UL>
+<% @raw_dirs.each do |dir| %>
+
+<div id="<%= dir.rel_path%>">
+<%= radio_button @setting, 'raw_dir', dir.rel_path %>
+<%= link_to_remote(dir.dir_name, :url => { :action => :load_dir, :rel => dir.rel_path, :setting => @setting },
+:loading => "load_div_image('"+dir.rel_path+"')", 
+:failure => "alert('HTTP Error ' + request.status + '!')",:update => dir.rel_path )%>
+</div>
+<% end %>
+</UL>
+
+<% else %>
+<BR> - No Subdirectories Found
+<% end %>
+
+</fieldset>
