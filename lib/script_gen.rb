@@ -144,10 +144,10 @@ class ScriptGen
         runscript += "#{SEQUEST_SCP_PREFIX}:#{SEQUEST_RESULTS}/#{job.sequest_search.raw_dir}/*.htm #{@work_dir}/\n\n"
 
  
-        #cleanup the temp tgz and mzXML files on the sequest server.
+        #cleanup the files on the sequest server.
         runscript += "#{SEQUEST_SSH_PREFIX} rm -f #{SEQUEST_RESULTS}/#{job.sequest_search.raw_dir}/*.tgz\n\n"
         runscript += "#{SEQUEST_SSH_PREFIX} rm -f #{SEQUEST_RESULTS}/#{job.sequest_search.raw_dir}/*.mzXML\n\n"
-
+        runscript += "#{SEQUEST_SSH_PREFIX} rm -rf #{SEQUEST_RESULTS}/#{job.sequest_search.raw_dir}/*/\n\n"
 
       elsif job.mascot_search
         
@@ -176,9 +176,10 @@ class ScriptGen
         runscript += "done < #{@work_dir}/datlist.txt\n"
 
 
-        #cleanup the temp tgz and mzXML files on the sequest server.
+        #cleanup the files on the sequest server.
         runscript += "#{SEQUEST_SSH_PREFIX} rm -f #{SEQUEST_RESULTS}/#{job.mascot_search.raw_dir}/*.tgz\n\n"
         runscript += "#{SEQUEST_SSH_PREFIX} rm -f #{SEQUEST_RESULTS}/#{job.mascot_search.raw_dir}/*.mzXML\n\n"
+        runscript += "#{SEQUEST_SSH_PREFIX} rm -rf #{SEQUEST_RESULTS}/#{job.mascot_search.raw_dir}/*/\n\n"
        
       end
       
