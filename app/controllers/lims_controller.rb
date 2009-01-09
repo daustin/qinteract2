@@ -1,7 +1,13 @@
 class LimsController < ApplicationController
   ###  now uses new lims objects ###
   def list
-    @projects = User.find_by_login(session[:cas_user]).projects
+    if params[:id]
+      
+      @projects = User.find(params[:id]).projects
+    else
+      @projects = User.find_by_login(session[:cas_user]).projects
+    end
+    
     render(:layout => false)
   end
   def login

@@ -1,14 +1,34 @@
 class Job < ActiveRecord::Base
 
   belongs_to :pipeline_analysis
-  has_one :sequest_search
-  has_one :mascot_search
-  has_one :analysis_setting
-  has_one :combion_filter
-  has_one :extract_dta
-  has_one :mscluster
+
+  has_one :sequest_search,
+          :dependent => :destroy
+
+  has_one :mascot_search,
+          :dependent => :destroy
+          
+  has_one :analysis_setting,
+          :dependent => :destroy
+
+  has_one :combion_filter,
+          :dependent => :destroy
+
+  has_one :extract_dta,
+          :dependent => :destroy
+
+  has_one :mscluster,
+          :dependent => :destroy
+
 
   validates_presence_of :qsub_id, :qsub_cmd, :runscript
+
+  #stop job and qudit job in queue
+  def before_destroy 
+    system "qdel #{self.qsub_id}.bap" if self.qsub_id > 0 
+    system "qdel #{self.qsub_id+1}.bap" if self.qsub_id > 0 
+  end
+
 
   def output
     @output = ''

@@ -1,6 +1,13 @@
 class PipelineProject < ActiveRecord::Base
-  has_many :pipeline_analyses
+  has_many :pipeline_analyses,
+           :dependent => :destroy
+
   validates_presence_of :name, :owner
+
+  def before_destroy 
+    system("rm -rf #{PROJECT_ROOT}/#{self.path}") 
+  end
+
   
   def self.desc
     find(:all,

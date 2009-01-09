@@ -13,7 +13,8 @@ class Project < LimsActiveRecord
   def self.getProjects(username)
     u = User.find(:first, :conditions => "login = '#{username}'")
 
-    return u.projects
+    return Project.find(:all, :order_by => "user")
+
 
   end
 

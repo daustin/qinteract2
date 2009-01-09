@@ -1,7 +1,14 @@
 class PipelineAnalysis < ActiveRecord::Base
- belongs_to :pipeline_project
- has_many :jobs
- validates_presence_of :name, :owner
+  belongs_to :pipeline_project
+  
+  has_many :jobs,
+           :dependent => :destroy
+  
+  validates_presence_of :name, :owner
+  
+  def before_destroy 
+    system("rm -rf #{PROJECT_ROOT}/#{self.path}") 
+  end
   
   
   def setPath

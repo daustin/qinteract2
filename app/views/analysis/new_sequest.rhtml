@@ -59,29 +59,27 @@ Choose Input files
 
 
 <% fields_for :sequest_search do |sequest_search| %>
-<tr><td><label for="sequest_search_raw_dir">Select a Raw
-dir<BR>(Click on name to drill down)</label><BR><BR>-or-<BR><BR>
 
-<%= link_to_remote("Import from LIMS",
-:loading => "load_div_image('inputs_div')", 
- :url => { :controller => "lims", :action => :list },
-:failure => "alert('HTTP Error ' + request.status + '!')", :update => "inputs_div" )%>
+<tr><td><label for="sequest_search_raw_dir">Select Files from LIMS<BR>(Drill Down)</label>
 
 </td>
-<td nowrap><div id="inputs_div">
 
-<% @raw_dirs.each do |dir| %>
+<td nowrap>
 
-<div id="<%= dir.rel_path%>">
-<%= sequest_search.radio_button :raw_dir, dir.rel_path %>
-<%= link_to_remote(dir.dir_name,
-:loading => "load_div_image('"+dir.rel_path+"')", 
- :url => { :action => :load_dir, :rel => dir.rel_path },
-:failure => "alert('HTTP Error ' + request.status + '!')",:update => dir.rel_path )%>
+<% @users.each do |u| %>
+<%= link_to_remote("#{u.login}",
+:loading => "load_div_image('inputs_div')", 
+ :url => { :controller => "lims", :action => :list, :id => u.id },
+:failure => "alert('HTTP Error ' + request.status + '!')", :update => u.login )%>
+
+<div id="<%= u.login %>">
+
 </div>
 
-<% end %>
-</div>
+
+<%-end %>
+
+
 
 </td></tr>
 

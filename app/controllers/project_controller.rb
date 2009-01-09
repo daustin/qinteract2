@@ -60,9 +60,9 @@ class ProjectController < ApplicationController
       anal.jobs.each { |job|
         #get the qsub id and test to see if it's running
       if job.qsub_id > 0 then
-        ps = IO.popen("qstat #{PBS_SERVER}")
+        ps = IO.popen("qstat ")
         ps.each { |line|
-            active = true if line =~ /#{job.qsub_id}\./
+            active = true if (line =~ /#{job.qsub_id}\./ && line =~ /\sR\s/)
             
           }
         
@@ -83,10 +83,6 @@ class ProjectController < ApplicationController
       
     }
 
-    
-    puts "#{BIOSTORE_SSH_PREFIX} rm -rf #{BIOSTORE_ROOT}/#{@pipeline_project.path}"
-    @ps = IO.popen("#{BIOSTORE_SSH_PREFIX} rm -rf #{BIOSTORE_ROOT}/#{@pipeline_project.path}", "r+")
-    @ps.close
     @pipeline_project.destroy
     redirect_to :controller => 'project', :action => 'list', :username => params[:username]
 

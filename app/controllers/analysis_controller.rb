@@ -109,7 +109,7 @@ class AnalysisController < ApplicationController
     @dataset_type = 'Sequest'
     @pipeline_project = PipelineProject.find(params[:id])
     @import_job = Job.findByPBS(params[:qsubid].to_i) if ! params[:qsubid].nil?
-    
+    @users = User.find(:all, :order => "login")    
     @pipeline_analysis = PipelineAnalysis.new
     @pipeline_analysis.pipeline_project = @pipeline_project
     @pipeline_analysis.pipeline_project_id = @pipeline_project.id
@@ -485,7 +485,7 @@ class AnalysisController < ApplicationController
     @dataset_type = 'Mascot'
     @pipeline_project = PipelineProject.find(params[:id])
     @import_job = Job.findByPBS(params[:qsubid].to_i) if ! params[:qsubid].nil?
-    
+    @users = User.find(:all, :order => "login")
     @pipeline_analysis = PipelineAnalysis.new
     @pipeline_analysis.pipeline_project = @pipeline_project
     @pipeline_analysis.pipeline_project_id = @pipeline_project.id
@@ -868,21 +868,20 @@ class AnalysisController < ApplicationController
 
     #now we check and make sure that there are no jobs running
     active = false
-
+ 
     @analysis.jobs.each { |job|
       #get the qsub id and test to see if it's running
       if job.qsub_id > 0 then
-        ps = IO.popen("qstat #{PBS_SERVER}")
+        ps = IO.popen("qstat ")
         ps.each { |line|
-          active = true if line =~ /#{job.qsub_id}\./
-          
+          active = true if (line =~ /#{job.qsub_id}\./ && line =~ /\sR\s/)
         }
         
         if active then
-          @alert_message = "This analysis cannot be deleted because it is active in the queue (job #{job.qsub_id}).  Either wait till it has finished running or contact your system administrator for further assistance."
+          @alert_message = "This analysis cannot be deleted because it is running in the queue (job #{job.qsub_id}).  Either wait till it has finished running or contact your system administrator for further assistance."
           
           break
-                    
+          
         end
       end
       
@@ -892,14 +891,9 @@ class AnalysisController < ApplicationController
     @project_id = @analysis.pipeline_project_id
     @analyses = PipelineProject.find(@project_id).pipeline_analyses
     render(:action => 'list', :layout => false) and return false if active
-
-    # first remove directory
-    puts "#{BIOSTORE_SSH_PREFIX} rm -rf #{BIOSTORE_ROOT}/#{@analysis.path}"
-    @ps = IO.popen("#{BIOSTORE_SSH_PREFIX} rm -rf #{BIOSTORE_ROOT}/#{@analysis.path}", "r+")
-    @ps.close
-    @project_id = @analysis.pipeline_project_id
+    
+    
     @analysis.destroy
-    @analyses = PipelineProject.find(@project_id).pipeline_analyses
     render(:action => 'list', :layout => false)
 
 
