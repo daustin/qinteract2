@@ -1,0 +1,15 @@
+
+
+<H2>Raw Usage data for <%=@year %></H2>
+
+<PRE>
+<% @audits.each do |a| 
+
+extra_time = 0.0
+extra_time = ((a.cluster_end - a.cluster_start) * a.cluster_multiple) / 60 unless (a.cluster_start.nil? || a.cluster_end.nil?)
+run_time = ((a.end_time - a.start_time) / 60).ceil
+user_total = run_time + extra_time
+
+-%>
+<%= a.start_time.to_s(:db) %><%= "\t" %><%= a.cost_center %><%= "\t" %><%= a.job_title %><%= "\t" %><%= user_total.round %>
+<% end -%>

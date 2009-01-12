@@ -8,7 +8,7 @@ class MainController < ApplicationController
   def current_queue
 
     @out = "CURRENT QSTAT OUTPUT\n\n"
-    @ps = IO.popen("/usr/local/bin/qstat #{PBS_SERVER}")
+    @ps = IO.popen("/usr/local/torque/bin/qstat #{PBS_SERVER}")
 
     @ps.each do |cout|
             
@@ -119,9 +119,10 @@ class MainController < ApplicationController
 
   end
 
-  def usage
-    @days_back = params[:id]
-    @audits = JobAudit.find(:all, :order => "cost_center, start_time", :conditions => "DATEDIFF(CURRENT_DATE,start_time)< #{@days_back} ")
+
+  def usage_raw
+    @year = params[:id]
+    @audits = JobAudit.find(:all, :order => "cost_center, start_time", :conditions => "YEAR(start_time) = #{@year}")
 
 
   end

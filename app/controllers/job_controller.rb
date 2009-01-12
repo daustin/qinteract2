@@ -70,10 +70,21 @@ class JobController < ApplicationController
   def audit
     numcpu = 2
     cm = 0
-    #audits a job specified by ID
-    @job_audit = JobAudit.new
-    #first read in file and construct job based on what is read in
     @job = Job.find(params[:id])
+
+    if @job.nil?
+      @message = "This Job has not been found.  It was probably deleted or you entered an invalid job ID."
+      render(:layout => false)
+      return
+    end
+
+    #audits a job specified by ID
+    if JobAudit.exists?(:job_id => @job.id)
+      @job_audit = JobAudit.find_by_job_id(:first, @job.id)
+    else
+      @job_audit = JobAudit.new
+    end
+    #first read in file and construct job based on what is read in
     @job_audit.cost_center = @job.pipeline_analysis.owner
     @job_audit.job_title = @job.pipeline_analysis.name
     @job_audit.job_id = @job.id
@@ -86,28 +97,34 @@ class JobController < ApplicationController
       @job_audit.queue = 'batch'
     end
 
-    outfile = File.open("#{QINTERACT_PROJECT_ROOT}/#{@job.pipeline_analysis.path}/runPipeline.sh.o#{@job.qsub_id}")
+    outfile = File.open("#{PROJECT_ROOT}/#{@job.pipeline_analysis.path}/runPipeline.sh.o#{@job.qsub_id}")
+    
+    if outfile.nil? || outfile.empty?
+      @message = "The file for this job cannot be read."
+      render(:layout => false)
+      return
+    end
 
     #now read each line and plug in the variables
     incluster = false
     outfile.each{ |line|
       if line =~ /^BEGIN EXECUTION.+/ then
         temptime = line.split('-')
-        @job_audit.start_time = temptime[1].strip
+        @job_audit.start_time = temptime[1].strip if @job_audit.start_time.nil?
       elsif line =~ /^END EXECUTION.+/ then
         temptime = line.split('-')
-        @job_audit.end_time = temptime[1].strip
+        @job_audit.end_time = temptime[1].strip if @job_audit.end_time.nil?
       elsif line =~ /^BEGIN CLUSTER.+/ then
         temptime = line.split('-')
-        @job_audit.cluster_start = temptime[1].strip
+        @job_audit.cluster_start = temptime[1].strip if @job_audit.cluster_start.nil?
         incluster = true
       elsif line =~ /^END CLUSTER.+/ then
         temptime = line.split('-')
-        @job_audit.cluster_end = temptime[1].strip
+        @job_audit.cluster_end = temptime[1].strip if @job_audit.cluster_end.nil?
         incluster = false
         
-      elsif line =~ /jsblade\d/ && incluster then
-        cm = cm + numcpu
+      elsif line =~ /.sblade\d/ && incluster then
+        cm = cm + numcpu 
         
       else 
         
@@ -116,7 +133,7 @@ class JobController < ApplicationController
       end
     }
 
-    @job_audit.cluster_multiple = cm
+    @job_audit.cluster_multiple = cm unless @job_audit.cluster_multiple > 0
     
     if @job_audit.save then
       @message = 'Job successfully audited'

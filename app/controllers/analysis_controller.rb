@@ -368,7 +368,7 @@ class AnalysisController < ApplicationController
         #now submit auditor:
 
         file2 = File.new("auditJob.sh", "w+", 0775)
-        file2.write("cd #{QINTERACT_PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
+        file2.write("cd #{PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
         file2.write("sleep 60\n\n")
         file2.write("wget -O audit.log #{AUDIT_URL}/#{@job.id}\n\n")
         file2.close
@@ -450,7 +450,7 @@ class AnalysisController < ApplicationController
             #now submit auditor:
 
             file2 = File.new("auditJob.sh", "w+", 0775)
-            file2.write("cd #{QINTERACT_PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
+            file2.write("cd #{PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
             file2.write("sleep 60\n\n")
             file2.write("wget -O audit.log http://guacamole.itmat.upenn.edu/qInteractBypass/job/audit/#{@temp_job.id}\n\n")
             file2.close
@@ -741,7 +741,7 @@ class AnalysisController < ApplicationController
         #now submit auditor:
 
         file2 = File.new("auditJob.sh", "w+", 0775)
-        file2.write("cd #{QINTERACT_PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
+        file2.write("cd #{PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
         file2.write("sleep 60\n\n")
         file2.write("wget -O audit.log http://guacamole.itmat.upenn.edu/qInteractBypass/job/audit/#{@job.id}\n\n")
         file2.close
@@ -822,7 +822,7 @@ class AnalysisController < ApplicationController
             #now submit auditor:
 
             file2 = File.new("auditJob.sh", "w+", 0775)
-            file2.write("cd #{QINTERACT_PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
+            file2.write("cd #{PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
             file2.write("wget -O audit.log http://guacamole.itmat.upenn.edu/qInteractBypass/job/audit/#{@temp_job.id}\n\n")
             file2.close
             @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@temp_job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
