@@ -3,7 +3,7 @@
 
 <% form_for :extract_param, :url => { :action => :new} do |extract|  %>
 
-Fill out form below OR Copy Settings From:  <%= extract.select(:id, ExtractParam.find(:all).collect {|p| [ p.filename, p.id ] }, { :include_blank => true }) %> <%= submit_tag "Copy" %> </td></tr>
+Fill out form below OR Copy Settings From:  <%= extract.select(:id, ExtractParam.find(:all, :order => 'filename').collect {|p| [ p.filename, p.id ] }, { :include_blank => true }) %> <%= submit_tag "Copy" %> </td></tr>
 <% end %>
 
 

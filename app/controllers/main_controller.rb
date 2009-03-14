@@ -106,8 +106,8 @@ class MainController < ApplicationController
 
       for i in 1...14 
 
-	 @out += "\n\njsblade#{i}:\n"
-         @ps = IO.popen("ssh jsblade#{i} #{@ls_cmd}")
+	 @out += "\n\nhsblade#{i}:\n"
+         @ps = IO.popen("ssh hsblade#{i} #{@ls_cmd}")
 	 @out += @ps.read 
          @ps.close
 

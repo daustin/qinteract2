@@ -17,7 +17,7 @@
 
 <% form_for :mascot_param, :url => { :action => 'new' }, :html => { :name => "newObjectForm" } do |mascot_param| %>
 
-Fill out form below OR Copy Settings From:  <%= mascot_param.select(:id, MascotParam.find(:all).collect {|p| [ p.filename, p.id ] }, { :include_blank => true }) %> <%= submit_tag "Copy" %> </td></tr>
+Fill out form below OR Copy Settings From:  <%= mascot_param.select(:id, MascotParam.find(:all, :order => 'filename').collect {|p| [ p.filename, p.id ] }, { :include_blank => true }) %> <%= submit_tag "Copy" %> </td></tr>
 <% end %>
 
 

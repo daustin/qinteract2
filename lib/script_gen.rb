@@ -265,7 +265,7 @@ class ScriptGen
   def self.extract_dta_script(extract_dta)
     runscript = ''
     # first create the params file ahead of time, then copy in script and run extract in script
-    tempfile = File.new("#{TEMP_SHARE}/#{extract_dta.extract_param.filename}_#{extract_dta.extract_param.updated_at.strftime('%Y%m%d')}.pXML", "w+")
+    tempfile = File.new("#{TEMP_SHARE}/#{extract_dta.extract_param.filename}_#{extract_dta.extract_param.updated_at.strftime('%Y%m%d%H%M%S')}.pXML", "w+")
     tempfile.write("#{extract_dta.extract_param.exportToFile()}")
     tempfile.close
     #now we copy over the file
@@ -306,7 +306,7 @@ class ScriptGen
     
     runscript = ''
     # first create the params file ahead of time, then copy in script and run extract in script
-    tempfile = File.new("#{TEMP_SHARE}/#{sequest_search.sequest_param.filename}_#{sequest_search.sequest_param.updated_at.strftime('%Y%m%d')}.params", "w+")
+    tempfile = File.new("#{TEMP_SHARE}/#{sequest_search.sequest_param.filename}_#{sequest_search.sequest_param.updated_at.strftime('%Y%m%d%H%M%S')}.params", "w+")
     tempfile.write("#{sequest_search.sequest_param.exportToFile()}")
     tempfile.close
     #now we copy over the file.
@@ -326,7 +326,7 @@ class ScriptGen
     
     runscript = ''
     # first create the params file ahead of time, then copy in script and run extract in script
-    tempfile = File.new("#{TEMP_SHARE}/#{mascot_search.mascot_param.filename}_#{mascot_search.mascot_param.updated_at.strftime('%Y%m%d')}.par", "w+")
+    tempfile = File.new("#{TEMP_SHARE}/#{mascot_search.mascot_param.filename}_#{mascot_search.mascot_param.updated_at.strftime('%Y%m%d%H%M%S')}.par", "w+")
     tempfile.write("#{mascot_search.mascot_param.exportToFile()}")
     tempfile.close
     #now we copy over the file.

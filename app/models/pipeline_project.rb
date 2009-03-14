@@ -1,6 +1,7 @@
 class PipelineProject < ActiveRecord::Base
   has_many :pipeline_analyses,
-           :dependent => :destroy
+           :dependent => :destroy,
+           :order => 'created_at DESC'
 
   validates_presence_of :name, :owner
 

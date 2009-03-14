@@ -36,20 +36,20 @@
 
 <% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{analysis.path}/interact.xml") -%>
 
-<A HREF="<%=PEPXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=analysis.path-%>/interact.xml"
+<A HREF="<%=PROJECT_URL_ROOT-%>/<%=analysis.path-%>/interact.shtml"
 target="_blank">PepProphet</A> 
 
 <% end -%>
 
 <% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{analysis.path}/interact-prot.xml") -%>
 
- | <A HREF="<%=PROTXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=analysis.path-%>/interact-prot.xml" target="_blank">ProtProphet</A>
+ | <A HREF="<%=PROJECT_URL_ROOT-%>/<%=analysis.path-%>/interact-prot.shtml" target="_blank">ProtProphet</A>
 
 <% end -%>
 
 <% if File.exist?("#{QINTERACT_PROJECT_ROOT}/#{analysis.path}/interact.prot.xml") -%>
 
- | <A HREF="<%=PROTXML2HTML_PREFIX-%><%=PROJECT_ROOT-%>/<%=analysis.path-%>/interact.prot.xml" target="_blank">ProtProphet</A>
+ | <A HREF="<%=PROJECT_URL_ROOT-%>/<%=analysis.path-%>/interact.prot.shtml" target="_blank">ProtProphet</A>
 
 <% end -%>
 

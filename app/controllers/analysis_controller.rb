@@ -135,7 +135,7 @@ class AnalysisController < ApplicationController
     else
 
         @extract_dta = ExtractDta.new()
-        @extract_dta.algorithm = 'decon'
+        @extract_dta.algorithm = 'mzxml2search'
         @combion_filter = CombionFilter.new
         @sequest_search = SequestSearch.new
 	@analysis_setting = AnalysisSetting.new
@@ -160,6 +160,7 @@ class AnalysisController < ApplicationController
     
     # @pipeline_project = PipelineProject.find(params[:id])
     @dataset_type = 'Sequest'
+    @users = User.find(:all, :order => "login")
     @pipeline_analysis = PipelineAnalysis.new
     @pipeline_analysis.pipeline_project = @pipeline_project
     @job = Job.new
@@ -509,7 +510,7 @@ class AnalysisController < ApplicationController
       
     else   
       @extract_dta = ExtractDta.new
-      @extract_dta.algorithm = 'decon'
+      @extract_dta.algorithm = 'mzxml2search'
       @mascot_search = MascotSearch.new
       @combion_filter = CombionFilter.new
       @analysis_setting = AnalysisSetting.new
@@ -534,6 +535,7 @@ class AnalysisController < ApplicationController
     # here is workaround so that validation will work. 
      @dataset_type = 'Mascot'
     # @pipeline_project = PipelineProject.find(params[:id])
+    @users = User.find(:all, :order => "login")
     @pipeline_analysis = PipelineAnalysis.new
     @pipeline_analysis.pipeline_project = @pipeline_project
     @job = Job.new 

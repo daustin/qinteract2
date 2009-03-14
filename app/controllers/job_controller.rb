@@ -97,9 +97,12 @@ class JobController < ApplicationController
       @job_audit.queue = 'batch'
     end
 
-    outfile = File.open("#{PROJECT_ROOT}/#{@job.pipeline_analysis.path}/runPipeline.sh.o#{@job.qsub_id}")
+     # outfile = File.new("#{PROJECT_ROOT}/#{@job.pipeline_analysis.path}/runPipeline.sh.o#{@job.qsub_id}")
     
-    if outfile.nil? || outfile.empty?
+    if File.file?("#{PROJECT_ROOT}/#{@job.pipeline_analysis.path}/runPipeline.sh.o#{@job.qsub_id}")
+      outfile = File.new("#{PROJECT_ROOT}/#{@job.pipeline_analysis.path}/runPipeline.sh.o#{@job.qsub_id}")
+
+    else
       @message = "The file for this job cannot be read."
       render(:layout => false)
       return

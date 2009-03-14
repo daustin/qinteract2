@@ -54,13 +54,14 @@ class ProteinDb
   end
 
   def self.getSequestDBFilenames
+    # filters for hdr and fasta files
     files = []
     ps = IO.popen("#{SEQUEST_SSH_PREFIX} ls -1 #{SEQUEST_DATABASE}")
     fn = ps.readlines
     fn.each do |name| 
   
       
-      files << ["#{name.chomp}", "S:\\sequest\\database\\#{name.chomp}"]
+      files << ["#{name.chomp}", "S:\\sequest\\database\\#{name.chomp}"]  if name =~ /\.fasta$/ || name =~ /\.hdr$/
     end
     ps.close
    return files
