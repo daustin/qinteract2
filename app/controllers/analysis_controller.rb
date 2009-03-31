@@ -385,7 +385,6 @@ class AnalysisController < ApplicationController
       redirect_to :controller => 'project', :action => 'list'
       
       #####
-      
       if params[:SeparateAnalyses] && @job.qsub_id > 0
         
         #here's where we submit the latter projects
@@ -430,7 +429,7 @@ class AnalysisController < ApplicationController
             @temp_file.write(@temp_job.runscript)
             @temp_file.close
 
-            @temp_job.qsub_cmd = "#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2:tpp -j oe -m be #{@mail_to} -W depend=afterany:#{@job.qsub_id}#{QSUB_JOB_SUFFIX} runPipeline.sh"
+            @temp_job.qsub_cmd = "#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@job.qsub_id}#{QSUB_JOB_SUFFIX} runPipeline.sh"
             
             
             
@@ -804,7 +803,7 @@ class AnalysisController < ApplicationController
             @temp_file.write(@temp_job.runscript)
             @temp_file.close
 
-            @temp_job.qsub_cmd = "#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2:tpp -j oe -m be #{@mail_to} -W depend=afterany:#{@job.qsub_id}#{QSUB_JOB_SUFFIX} runPipeline.sh"
+            @temp_job.qsub_cmd = "#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@job.qsub_id}#{QSUB_JOB_SUFFIX} runPipeline.sh"
             
                        
             @ps = IO.popen(@temp_job.qsub_cmd, "r+")
