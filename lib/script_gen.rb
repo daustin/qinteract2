@@ -126,9 +126,34 @@ class ScriptGen
         runscript += "#{SEQUEST_SCP_PREFIX}:#{@tempprefix}/*.html #{@work_dir}/\n\n"
         runscript += "#{SEQUEST_SCP_PREFIX}:#{@tempprefix}/*.htm #{@work_dir}/\n\n"
 
-        runscript += "#{SEQUEST_SCP_PREFIX}:#{@tempprefix}/sequest.params #{@work_dir}/\n\n" if job.analysis_setting.dataset_type == "Sequest"
-        runscript += "#{SEQUEST_SCP_PREFIX}:#{@tempprefix}/mascot.par #{@work_dir}/\n\n"  if job.analysis_setting.dataset_type == "Mascot"
-        runscript += "#{SEQUEST_SCP_PREFIX}:#{@fnprefix}/datlist.txt #{@work_dir}/\n\n"  if job.analysis_setting.dataset_type == "Mascot"
+        #now we run specifics for sequest and mascot single file
+
+        if job.analysis_setting.dataset_type.eql?("Sequest")
+           runscript += "#{SEQUEST_SCP_PREFIX}:#{@tempprefix}/sequest.params #{@work_dir}/\n\n" 
+
+        elsif job.analysis_setting.dataset_type.eql?("Mascot")
+          runscript += "#{SEQUEST_SCP_PREFIX}:#{@tempprefix}/mascot.par #{@work_dir}/\n\n"
+          runscript += "#{SEQUEST_SCP_PREFIX}:#{@fnprefix}/datlist.txt #{@work_dir}/\n\n"
+          
+          #for each file in datlist, loop through and copy to work directory. 
+                    
+          runscript += "while read inputline\n"
+          runscript += "do\n"
+          runscript += "datfile=\"$(echo $inputline | cut -d= -f1)\"\n"
+          runscript += "rawfile=\"$(echo $inputline | cut -d= -f2)\"\n"
+          runscript += "cp -v #{MASCOT_DATA}/$datfile #{@work_dir}\n"
+          runscript += "tempname=\"$(echo $datfile | cut -d/ -f2)\"\n"
+          runscript += "done < #{@work_dir}/datlist.txt\n"
+          
+        else
+          # do nothing
+        end
+
+        # common cleanup stuff
+        runscript += "#{SEQUEST_SSH_PREFIX} rm -f #{@fnprefix}.tgz\n\n"
+        runscript += "#{SEQUEST_SSH_PREFIX} rm -f #{@fnprefix}.mzXML\n\n"
+        runscript += "#{SEQUEST_SSH_PREFIX} rm -rf #{@fnprefix}/\n\n"
+
         
 
       elsif job.sequest_search
