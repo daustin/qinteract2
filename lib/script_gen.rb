@@ -290,6 +290,7 @@ class ScriptGen
   def self.extract_dta_script(extract_dta)
     runscript = ''
     # first create the params file ahead of time, then copy in script and run extract in script
+    system "mkdir #{TEMP_SHARE}" unless File.exist?("#{TEMP_SHARE}")
     tempfile = File.new("#{TEMP_SHARE}/#{extract_dta.extract_param.filename}_#{extract_dta.extract_param.updated_at.strftime('%Y%m%d%H%M%S')}.pXML", "w+")
     tempfile.write("#{extract_dta.extract_param.exportToFile()}")
     tempfile.close
@@ -314,9 +315,8 @@ class ScriptGen
       runscript += "#{SEQUEST_SSH_PREFIX} runReadw.sh #{SEQUEST_RESULTS}/#{extract_dta.raw_dir} "
       runscript += "p\n\n" 
       
-      runscript += "#{SEQUEST_SSH_PREFIX} ruby -S run_mzxml2search.rb -c #{SEQUEST_RESULTS}/#{extract_dta.raw_dir} -p ./#{File.basename(tempfile.path)} "
+      runscript += "#{SEQUEST_SSH_PREFIX} ruby -S run_extractmsn.rb -c #{SEQUEST_RESULTS}/#{extract_dta.raw_dir} -p ./#{File.basename(tempfile.path)} "
 
-      runscript += "--mgf" unless extract_dta.job.mscluster.nil?
       runscript += "\n\n"
 
     end
@@ -331,6 +331,7 @@ class ScriptGen
     
     runscript = ''
     # first create the params file ahead of time, then copy in script and run extract in script
+    system "mkdir #{TEMP_SHARE}" unless File.exist?("#{TEMP_SHARE}")
     tempfile = File.new("#{TEMP_SHARE}/#{sequest_search.sequest_param.filename}_#{sequest_search.sequest_param.updated_at.strftime('%Y%m%d%H%M%S')}.params", "w+")
     tempfile.write("#{sequest_search.sequest_param.exportToFile()}")
     tempfile.close
@@ -351,6 +352,7 @@ class ScriptGen
     
     runscript = ''
     # first create the params file ahead of time, then copy in script and run extract in script
+    system "mkdir #{TEMP_SHARE}" unless File.exist?("#{TEMP_SHARE}")
     tempfile = File.new("#{TEMP_SHARE}/#{mascot_search.mascot_param.filename}_#{mascot_search.mascot_param.updated_at.strftime('%Y%m%d%H%M%S')}.par", "w+")
     tempfile.write("#{mascot_search.mascot_param.exportToFile()}")
     tempfile.close

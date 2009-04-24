@@ -135,7 +135,7 @@ class AnalysisController < ApplicationController
     else
 
         @extract_dta = ExtractDta.new()
-        @extract_dta.algorithm = 'mzxml2search'
+        @extract_dta.algorithm = 'extract_msn'
         @combion_filter = CombionFilter.new
         @sequest_search = SequestSearch.new
 	@analysis_setting = AnalysisSetting.new
@@ -509,7 +509,7 @@ class AnalysisController < ApplicationController
       
     else   
       @extract_dta = ExtractDta.new
-      @extract_dta.algorithm = 'mzxml2search'
+      @extract_dta.algorithm = 'extract_msn'
       @mascot_search = MascotSearch.new
       @combion_filter = CombionFilter.new
       @analysis_setting = AnalysisSetting.new
