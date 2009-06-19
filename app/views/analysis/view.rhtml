@@ -42,7 +42,7 @@ for this analysis.  Are you sure?", :post => true %> | Rerun |
 <BR><BR>
 	<% for dat in @datlist -%>
 	
-	<%= link_to "#{dat[9...-1].strip}", "http://bioinf.itmat.upenn.edu/mascot/cgi/master_results.pl?file=../data/#{dat.strip}", :popup => true  %> | 
+	<%= link_to "#{dat[9...-1].strip}", "http://bioinf.itmat.upenn.edu/mascot/cgi/master_results.pl?file=../data/#{dat.split('=')[0].strip}", :popup => true  %> | 
 	<% end -%>
 <% end -%>
 
