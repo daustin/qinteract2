@@ -35,7 +35,15 @@ target="_blank">PepProphet</A>
 :id => @analysis.id}, :confirm => "You are about to permanently delete all data
 for this analysis.  Are you sure?", :post => true %> | Rerun | 
 <%= link_to "Peptide Counts", { :action => "count_peptides", :id => @analysis.id}, :popup => true, :popup => ['params_window', 'height=300,width=600,scrollbars,resizable,screenX=200,screenY=200,top=200,left=200']  %> |
-<%= link_to "PI Numbers by Protein", { :action => "list_pi", :id => @analysis.id}, :popup => true, :popup => ['params_window', 'height=300,width=600,scrollbars,resizable,screenX=200,screenY=200,top=200,left=200']  %>
+<%= link_to "PI Numbers by Protein", { :action => "list_pi", :id => @analysis.id}, :popup => true, :popup => ['params_window', 'height=300,width=600,scrollbars,resizable,screenX=200,screenY=200,top=200,left=200']  %> | 
+<% if @analysis.archived==1 -%>
+<%= link_to "Retrieve Analysis From Archives", {:action => "unzip", :id => @analysis.id} %>
+
+<% else -%>
+
+<%= link_to "Archive This Analysis", {:action => "zip", :id => @analysis.id} %>
+
+<% end -%>
 
 
 <% if ! @datlist.nil? -%>
@@ -52,6 +60,9 @@ for this analysis.  Are you sure?", :post => true %> | Rerun |
 <TD valign="top">
 
 <H3>Files:</H3>
+<% if @analysis.archived==1 || ! File.exist?("#{QINTERACT_PROJECT_ROOT}/#{@analysis.path}") -%>
+FILES ARCHIVED
+<% else -%>
 <% for file in @analysis.getFiles -%>
 
 <A
@@ -61,6 +72,7 @@ HREF="<%="#{PROJECT_URL_ROOT}"-%>/<%="#{@analysis.path}"-%>/<%="#{file}"-%>" tar
 
 <% end -%>
 
+<% end %>
 
 </TD>
 

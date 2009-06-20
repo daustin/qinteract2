@@ -104,6 +104,87 @@ class AnalysisController < ApplicationController
   #need new sequest and new mascot
   #need separate create for sequest and mascot
 
+  def zip
+    analysis = PipelineAnalysis.find(params[:id])
+    #first we look to see if the job is still running
+    ps = IO.popen("qstat #{analysis.archive_qid}.bap 2>&1")
+    pstr = ps.gets
+    ps.close
+    if pstr =~ /Unknown/
+      analysis.archived = 1
+      #now submit the archive script
+      Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
+        runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
+        runfile.write( "cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
+        runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+        runfile.write("rm -rf #{analysis.owner}_#{analysis.id}/\n\n")
+        runfile.close
+        # now get the qsub id
+        ps = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe zip_#{analysis.id}.sh", "r+")
+        out = ps.gets        
+        if ! out.nil? && out.match(/^\d.*/)
+          sa = out.split('.')
+          analysis.archive_qid = sa[0]
+          flash[:notice] = "Archive task submimtted. Please allow several minutes for the job to run: Job #{sa[0]}"
+        else
+          analysis.archive_qid= 0
+          flash[:notice] = 'Archive task could not be submitted. Contact your administrator.'
+        end    
+        ps.close
+      end
+    else
+      # job is still running
+      flash[:notice] = "Could not perform task because job #{analysis.archive_qid} is still running"      
+    end
+    analysis.save    
+    redirect_to :action => "view", :id => "#{analysis.id}"
+    
+    
+  end
+
+ def unzip
+   analysis = PipelineAnalysis.find(params[:id])
+   #first we look to see if the job is still running
+   ps = IO.popen("qstat #{analysis.archive_qid}.bap 2>&1")
+   pstr = ps.gets
+   ps.close
+   if pstr =~ /Unknown/
+     analysis.archived = 0
+     #now submit the unarchive script
+     Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
+       runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
+       runfile.write("cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
+       runfile.write("tar --gunzip -xzvf archive_#{analysis.id}.tgz \n\n")
+       runfile.write("chmod -R 777 #{analysis.owner}_#{analysis.id}/ \n\n")
+       runfile.close
+       # now get the qsub id
+       ps = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe zip_#{analysis.id}.sh", "r+")
+       out = ps.gets        
+       if ! out.nil? && out.match(/^\d.*/)
+         sa = out.split('.')
+         analysis.archive_qid = sa[0]
+         flash[:notice] = "Archive task submimtted. Please allow several minutes for the job to run: Job #{sa[0]}"
+       else
+         analysis.archive_qid= 0
+         flash[:notice] = 'Archive task could not be submitted. Contact your administrator.'
+       end    
+       ps.close
+     end
+   else
+     # job is still running
+     flash[:notice] = "Could not perform task because job #{analysis.archive_qid} is still running"      
+   end
+   analysis.save
+   redirect_to :action => "view", :id => "#{analysis.id}"
+   
+   
+   
+   
+ end
+
+
+
+
   def new_sequest
 
     @dataset_type = 'Sequest'
