@@ -41,7 +41,7 @@ TEMP_SHARE = '/home/qinteract/tmp'  # shared temp directory FOR TEMP WRITING OF 
 DATAFILE_PATH_PREFIX = '/mnt/san/lims1/data_files' # path prefix for data files from the lims
 AUDIT_URL = 'http://bioinf.itmat.upenn.edu/qInteract2/job/audit' # for audit reporting
 TRACEJOB_CMD = 'ssh pbs tracejob ' #tracejob command may be ssh
-
+ARCHIVE_ROOT = '/data/archive'
 
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.

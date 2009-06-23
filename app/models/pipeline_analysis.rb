@@ -7,7 +7,8 @@ class PipelineAnalysis < ActiveRecord::Base
   validates_presence_of :name, :owner
   
   def before_destroy 
-    system("rm -rf #{PROJECT_ROOT}/#{self.path}") 
+    system("rm -rf #{PROJECT_ROOT}/#{self.path}")
+    system("rm -f #{ARCHIVE_ROOT}/archive_#{self.id}.tgz") 
   end
   
   

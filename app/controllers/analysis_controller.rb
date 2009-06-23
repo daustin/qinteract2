@@ -101,8 +101,43 @@ class AnalysisController < ApplicationController
     render(:layout => false)
   end
 
-  #need new sequest and new mascot
-  #need separate create for sequest and mascot
+  def zip_prep
+    #creates archive without setting archive flag or removiing directory
+    analysis = PipelineAnalysis.find(params[:id])
+    #first we look to see if the job is still running
+    ps = IO.popen("qstat #{analysis.archive_qid}.bap 2>&1")
+    pstr = ps.gets
+    ps.close
+    if pstr =~ /Unknown/
+      #now submit the archive script
+      Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
+        runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
+        runfile.write( "cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
+        unless File.exist?("#{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz") then
+          runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+          runfile.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+        end
+        runfile.close
+        # now get the qsub id
+        ps = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe zip_#{analysis.id}.sh", "r+")
+        out = ps.gets        
+        if ! out.nil? && out.match(/^\d.*/)
+          sa = out.split('.')
+          analysis.archive_qid = sa[0]
+          flash[:notice] = "Archive task submimtted. Please allow several minutes for the job to run: Job #{sa[0]}"
+        else
+          analysis.archive_qid= 0
+          flash[:notice] = 'Archive task could not be submitted. Contact your administrator.'
+        end    
+        ps.close
+      end
+    else
+      # job is still running
+      flash[:notice] = "Could not perform task because job #{analysis.archive_qid} is still running"      
+    end
+    redirect_to :action => "view", :id => "#{analysis.id}"
+
+  end
 
   def zip
     analysis = PipelineAnalysis.find(params[:id])
@@ -116,7 +151,10 @@ class AnalysisController < ApplicationController
       Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
         runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
         runfile.write( "cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
-        runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+        unless File.exist?("#{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz") then
+          runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+          runfile.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+        end
         runfile.write("rm -rf #{analysis.owner}_#{analysis.id}/\n\n")
         runfile.close
         # now get the qsub id
@@ -154,8 +192,10 @@ class AnalysisController < ApplicationController
      Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
        runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
        runfile.write("cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
+       runfile.write("cp #{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz .\n\n")
        runfile.write("tar --gunzip -xzvf archive_#{analysis.id}.tgz \n\n")
        runfile.write("chmod -R 777 #{analysis.owner}_#{analysis.id}/ \n\n")
+       runfile.write("rm ./archive_#{analysis.id}.tgz \n\n")
        runfile.close
        # now get the qsub id
        ps = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe zip_#{analysis.id}.sh", "r+")
@@ -183,7 +223,8 @@ class AnalysisController < ApplicationController
  end
 
 
-
+  #need new sequest and new mascot
+  #need separate create for sequest and mascot
 
   def new_sequest
 
@@ -453,6 +494,11 @@ class AnalysisController < ApplicationController
         file2.write("cd #{PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
         file2.write("sleep 60\n\n")
         file2.write("wget -O audit.log #{AUDIT_URL}/#{@job.id}\n\n")
+        # now we zip it up
+        analysis = @pipeline_analysis
+        file2.write("cd ..\n\n")
+        file2.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+        file2.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
         file2.close
         @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
         @ps2.close
@@ -534,6 +580,11 @@ class AnalysisController < ApplicationController
             file2.write("cd #{PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
             file2.write("sleep 60\n\n")
             file2.write("wget -O audit.log http://guacamole.itmat.upenn.edu/qInteractBypass/job/audit/#{@temp_job.id}\n\n")
+            # now we zip it up
+            analysis = @pipeline_analysis
+            file2.write("cd ..\n\n")
+            file2.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+            file2.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
             file2.close
             @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@temp_job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
             @ps2.close
@@ -826,6 +877,11 @@ class AnalysisController < ApplicationController
         file2.write("cd #{PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
         file2.write("sleep 60\n\n")
         file2.write("wget -O audit.log http://guacamole.itmat.upenn.edu/qInteractBypass/job/audit/#{@job.id}\n\n")
+        # now we zip it up
+        analysis = @pipeline_analysis
+        file2.write("cd ..\n\n")
+        file2.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+        file2.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
         file2.close
         @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
         @ps2.close
@@ -906,6 +962,11 @@ class AnalysisController < ApplicationController
             file2 = File.new("auditJob.sh", "w+", 0775)
             file2.write("cd #{PROJECT_ROOT}/#{@pipeline_analysis.path}\n\n")
             file2.write("wget -O audit.log http://guacamole.itmat.upenn.edu/qInteractBypass/job/audit/#{@temp_job.id}\n\n")
+            # now we zip it up
+            analysis = @pipeline_analysis
+            file2.write("cd ..\n\n")
+            file2.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+            file2.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
             file2.close
             @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@temp_job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
             @ps2.close

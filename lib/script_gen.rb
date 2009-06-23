@@ -244,6 +244,7 @@ class ScriptGen
 
       runscript += "rm -rf */\n\n"
 
+
     end
     runscript += "echo END EXECUTION - `date`\n"
     return runscript	
@@ -444,7 +445,6 @@ class ScriptGen
     runscript += "perl -S ebp.pl #{analysis_setting.ebp_flags} interact.xml ebp.xml\n\n"
     
     runscript += "chmod 777 *.*\n\n"
-    
     
     return runscript
     
