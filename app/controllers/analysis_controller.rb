@@ -1,4 +1,5 @@
 class AnalysisController < ApplicationController
+  skip_before_filter CASClient::Frameworks::Rails::Filter, :only => [:zip,:unzip,:zip_prep ]
   require "tpp_file"
   require "yaml"
   require 'net/http'
@@ -113,8 +114,8 @@ class AnalysisController < ApplicationController
       Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
         runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
         runfile.write( "cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
-        unless File.exist?("#{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz") then
-          runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
+        if  (! File.exist?("#{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz")) || (File.size("#{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz") < 20000000) then
+          runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.path.split('/')[1]}/\n\n")
           runfile.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
         end
         runfile.close
@@ -135,7 +136,6 @@ class AnalysisController < ApplicationController
       # job is still running
       flash[:notice] = "Could not perform task because job #{analysis.archive_qid} is still running"      
     end
-    redirect_to :action => "view", :id => "#{analysis.id}"
 
   end
 
@@ -151,11 +151,11 @@ class AnalysisController < ApplicationController
       Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
         runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
         runfile.write( "cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
-        unless File.exist?("#{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz") then
-          runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
-          runfile.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+        if File.exist?("#{PROJECT_ROOT}/#{analysis.path}") then
+          runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.path.split('/')[1]}/\n\n")
+          runfile.write("mv -f archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+          runfile.write("rm -rf #{analysis.path.split('/')[1]}/\n\n")
         end
-        runfile.write("rm -rf #{analysis.owner}_#{analysis.id}/\n\n")
         runfile.close
         # now get the qsub id
         ps = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe zip_#{analysis.id}.sh", "r+")
@@ -1006,7 +1006,7 @@ class AnalysisController < ApplicationController
   
     if ! @analysis.owner.eql?(session[:cas_user]) then
       @alert_message = 'You cannot delete an analysis that you do not own!'
-      render(:action => 'list', :layout => false) and return 
+       render(:action => 'list', :layout => false) and return 
     end
 
     #now we check and make sure that there are no jobs running
