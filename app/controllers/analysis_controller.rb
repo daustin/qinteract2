@@ -102,42 +102,17 @@ class AnalysisController < ApplicationController
     render(:layout => false)
   end
 
-  def zip_prep
-    #creates archive without setting archive flag or removiing directory
-    analysis = PipelineAnalysis.find(params[:id])
-    #first we look to see if the job is still running
-    ps = IO.popen("qstat #{analysis.archive_qid}.bap 2>&1")
-    pstr = ps.gets
-    ps.close
-    if pstr =~ /Unknown/
-      #now submit the archive script
-      Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
-        runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
-        runfile.write( "cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
-        if  (! File.exist?("#{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz")) || (File.size("#{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz") < 20000000) then
-          runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.path.split('/')[1]}/\n\n")
-          runfile.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
-        end
-        runfile.close
-        # now get the qsub id
-        ps = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe zip_#{analysis.id}.sh", "r+")
-        out = ps.gets        
-        if ! out.nil? && out.match(/^\d.*/)
-          sa = out.split('.')
-          analysis.archive_qid = sa[0]
-          flash[:notice] = "Archive task submimtted. Please allow several minutes for the job to run: Job #{sa[0]}"
-        else
-          analysis.archive_qid= 0
-          flash[:notice] = 'Archive task could not be submitted. Contact your administrator.'
-        end    
-        ps.close
-      end
-    else
-      # job is still running
-      flash[:notice] = "Could not perform task because job #{analysis.archive_qid} is still running"      
-    end
 
-  end
+  ##############  primary archiving method.  generates a script containing something like the following
+  #  
+  #  cd /path/to/project
+  #  tar --gzip -pcvf archive_1001.tgz user_1001/
+  #  ruby s3cmd.rb put itmat-wdbackup:archive_1001.tgz archive_1001.tgz
+  #  if `ruby /opt/s3sync/s3cmd.rb list itmat-wdbackup:archive_1001.tgz | grep archive_1001.tgz` = "archive_1001.tgz"
+  #  then
+  #  rm -rf user_1001/ 
+  #  fi
+  #
 
   def zip
     analysis = PipelineAnalysis.find(params[:id])
@@ -153,8 +128,13 @@ class AnalysisController < ApplicationController
         runfile.write( "cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
         if File.exist?("#{PROJECT_ROOT}/#{analysis.path}") then
           runfile.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.path.split('/')[1]}/\n\n")
-          runfile.write("mv -f archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+          runfile.write("ruby #{S3CMD_PATH} put #{S3BUCKET}:archive_#{analysis.id}.tgz archive_#{analysis.id}.tgz\n\n")  #put on server
+          # now we write the complicated failsafe part.  only delete the dir if the archive is up on s3
+          runfile.write("if [ `ruby #{S3CMD_PATH} list #{S3BUCKET}:archive_#{analysis.id}.tgz | grep archive_#{analysis.id}.tgz` = \"archive_#{analysis.id}.tgz\" ]\n")
+          runfile.write("then\n")
           runfile.write("rm -rf #{analysis.path.split('/')[1]}/\n\n")
+          runfile.write("fi\n")
+          runfile.write("rm -f archive_#{analysis.id}.tgz\n")
         end
         runfile.close
         # now get the qsub id
@@ -179,50 +159,53 @@ class AnalysisController < ApplicationController
     
     
   end
+ 
+  ###################### downloads from S3 and then unzips file  
+  #
+  #
+  #
 
- def unzip
-   analysis = PipelineAnalysis.find(params[:id])
-   #first we look to see if the job is still running
-   ps = IO.popen("qstat #{analysis.archive_qid}.bap 2>&1")
-   pstr = ps.gets
-   ps.close
-   if pstr =~ /Unknown/
-     analysis.archived = 0
-     #now submit the unarchive script
-     Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
-       runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
-       runfile.write("cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
-       runfile.write("cp #{ARCHIVE_ROOT}/archive_#{analysis.id}.tgz .\n\n")
-       runfile.write("tar --gunzip -xzvf archive_#{analysis.id}.tgz \n\n")
-       runfile.write("chmod -R 777 #{analysis.owner}_#{analysis.id}/ \n\n")
-       runfile.write("rm ./archive_#{analysis.id}.tgz \n\n")
-       runfile.close
-       # now get the qsub id
-       ps = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe zip_#{analysis.id}.sh", "r+")
-       out = ps.gets        
-       if ! out.nil? && out.match(/^\d.*/)
-         sa = out.split('.')
-         analysis.archive_qid = sa[0]
-         flash[:notice] = "Archive task submimtted. Please allow several minutes for the job to run: Job #{sa[0]}"
-       else
-         analysis.archive_qid= 0
-         flash[:notice] = 'Archive task could not be submitted. Contact your administrator.'
-       end    
-       ps.close
-     end
-   else
-     # job is still running
-     flash[:notice] = "Could not perform task because job #{analysis.archive_qid} is still running"      
-   end
-   analysis.save
-   redirect_to :action => "view", :id => "#{analysis.id}"
-   
-   
-   
-   
- end
-
-
+  def unzip
+    analysis = PipelineAnalysis.find(params[:id])
+    #first we look to see if the job is still running
+    ps = IO.popen("qstat #{analysis.archive_qid}.bap 2>&1")
+    pstr = ps.gets
+    ps.close
+    if pstr =~ /Unknown/
+      analysis.archived = 0
+      #now submit the unarchive script
+      Dir.chdir("#{PROJECT_ROOT}/#{analysis.pipeline_project.path}") do
+        runfile = File.new("zip_#{analysis.id}.sh", "w+", 0775)
+        runfile.write("cd #{PROJECT_ROOT}/#{analysis.pipeline_project.path}\n\n")
+        runfile.write("ruby #{S3CMD_PATH} get #{S3BUCKET}:archive_#{analysis.id}.tgz archive_#{analysis.id}.tgz\n\n")  # get from s3 server instead
+        runfile.write("tar --gunzip -xzvf archive_#{analysis.id}.tgz \n\n")
+        runfile.write("chmod -R 777 #{analysis.owner}_#{analysis.id}/ \n\n")
+        runfile.write("rm ./archive_#{analysis.id}.tgz \n\n")
+        runfile.close
+        # now get the qsub id
+        ps = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe zip_#{analysis.id}.sh", "r+")
+        out = ps.gets        
+        if ! out.nil? && out.match(/^\d.*/)
+          sa = out.split('.')
+          analysis.archive_qid = sa[0]
+          flash[:notice] = "Archive task submimtted. Please allow several minutes for the job to run: Job #{sa[0]}"
+        else
+          analysis.archive_qid= 0
+          flash[:notice] = 'Archive task could not be submitted. Contact your administrator.'
+        end    
+        ps.close
+      end
+    else
+      # job is still running
+      flash[:notice] = "Could not perform task because job #{analysis.archive_qid} is still running"      
+    end
+    analysis.save
+    redirect_to :action => "view", :id => "#{analysis.id}"
+        
+    
+  end
+  
+  
   #need new sequest and new mascot
   #need separate create for sequest and mascot
 
@@ -498,7 +481,8 @@ class AnalysisController < ApplicationController
         analysis = @pipeline_analysis
         file2.write("cd ..\n\n")
         file2.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
-        file2.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+        file2.write("ruby #{S3CMD_PATH} put #{S3BUCKET}:archive_#{analysis.id}.tgz archive_#{analysis.id}.tgz\n\n")  #put on server
+        file2.write("rm -f archive_#{analysis.id}.tgz\n\n")
         file2.close
         @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
         @ps2.close
@@ -584,7 +568,8 @@ class AnalysisController < ApplicationController
             analysis = @pipeline_analysis
             file2.write("cd ..\n\n")
             file2.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
-            file2.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+            file2.write("ruby #{S3CMD_PATH} put #{S3BUCKET}:archive_#{analysis.id}.tgz archive_#{analysis.id}.tgz\n\n")  #put on server
+            file2.write("rm -f archive_#{analysis.id}.tgz\n\n")
             file2.close
             @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@temp_job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
             @ps2.close
@@ -881,7 +866,8 @@ class AnalysisController < ApplicationController
         analysis = @pipeline_analysis
         file2.write("cd ..\n\n")
         file2.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
-        file2.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+        file2.write("ruby #{S3CMD_PATH} put #{S3BUCKET}:archive_#{analysis.id}.tgz archive_#{analysis.id}.tgz\n\n")  #put on server
+        file2.write("rm -f  archive_#{analysis.id}.tgz\n\n")
         file2.close
         @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
         @ps2.close
@@ -966,7 +952,8 @@ class AnalysisController < ApplicationController
             analysis = @pipeline_analysis
             file2.write("cd ..\n\n")
             file2.write("tar --gzip -pcvf archive_#{analysis.id}.tgz #{analysis.owner}_#{analysis.id}/\n\n")
-            file2.write("mv archive_#{analysis.id}.tgz #{ARCHIVE_ROOT}\n\n")
+            file2.write("ruby #{S3CMD_PATH} put #{S3BUCKET}:archive_#{analysis.id}.tgz archive_#{analysis.id}.tgz\n\n")  #put on server
+            file2.write("rm -f archive_#{analysis.id}.tgz\n\n")
             file2.close
             @ps2 = IO.popen("#{QSUB_PREFIX} #{QSUB_CONCUR}#{PBS_SERVER} -l nodes=1:ppn=2 -j oe -m be #{@mail_to} -W depend=afterany:#{@temp_job.qsub_id}#{QSUB_JOB_SUFFIX} auditJob.sh", "r+")
             @ps2.close
