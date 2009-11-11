@@ -8,7 +8,7 @@ class PipelineAnalysis < ActiveRecord::Base
   
   def before_destroy 
     system("rm -rf #{PROJECT_ROOT}/#{self.path}")
-    system("#{RUBY_EXEC} #{S3CMD_PATH} delete #{S3BUCKET}:archive_#{self.id}.tgz") # delete from server
+    system("rm -f #{ARCHIVE_ROOT}/archive_#{self.id}.tgz") 
   end
   
   
