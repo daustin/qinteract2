@@ -1,4 +1,6 @@
 class PipelineAnalysis < ActiveRecord::Base
+  before_save :setPath
+
   belongs_to :pipeline_project
   
   has_many :jobs,
