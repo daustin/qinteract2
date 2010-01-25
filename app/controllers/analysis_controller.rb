@@ -980,15 +980,24 @@ class AnalysisController < ApplicationController
 
     #now we check and make sure that there are no jobs running
     active = false
- 
+    queued = false
     @analysis.jobs.each { |job|
       #get the qsub id and test to see if it's running
       if job.qsub_id > 0 then
         ps = IO.popen("qstat ")
         ps.each { |line|
           active = true if (line =~ /#{job.qsub_id}\./ && line =~ /\sR\s/)
+          queued = true if (line =~ /#{job.qsub_id}\./ && line =~ /\sQ\s/)
         }
         
+        if queued then
+          system("#{QDEL_PREFIX} #{job.qsub_id}#{QSUB_JOB_SUFFIX}")
+          @alert_message = "The associated job #{job.qsub_id} was found in the queue and removed. "
+          
+
+        end
+
+
         if active then
           @alert_message = "This analysis cannot be deleted because it is running in the queue (job #{job.qsub_id}).  Either wait till it has finished running or contact your system administrator for further assistance."
           

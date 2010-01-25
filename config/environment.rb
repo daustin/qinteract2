@@ -19,6 +19,7 @@ PROJECT_TMP_ROOT = '/scratch/www/htdocs/qInteract/data2' #SCRATCH ROOT FOR LOCAL
 SEQUEST_SSH_PREFIX = 'ssh -n proteomics@sequest'
 SEQUEST_SCP_PREFIX = 'scp proteomics@sequest'
 QSUB_PREFIX = '/opt/x86_64/torque/bin/qsub '  #PATH TO QSUB
+QDEL_PREFIX = '/opt/x86_64/torque/bin/qdel '  #PATH TO QSUB
 WEBSERVER_ROOT = '/data/www/htdocs' #XINTERACT VAR
 WEBSERVER_TMP_ROOT = '/scratch/www/htdocs' #ANOTHER XINTERACT VAR
 BIOSTORE_SSH_PREFIX = 'ssh -n fileserver '
