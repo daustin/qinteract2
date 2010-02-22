@@ -4,9 +4,8 @@ class JobAudit < ActiveRecord::Base
   def raw_file_count
   
     inputfiles = 0
-    
+    return 'UNKNOWN' unless Job.exists?(:id => self.job_id)
     j = Job.find(self.job_id)
-    return -1 if j.nil?
     script = j.runscript
 
     # now enumerate through each line
