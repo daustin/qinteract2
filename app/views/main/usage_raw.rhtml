@@ -3,6 +3,7 @@
 <H2>Raw Usage data for <%=@year %></H2>
 
 <PRE>
+START TIME<%= "\t" %>COST CENTER<%= "\t" %>JOB TITLE<%= "\t" %>TOTAL USAGE<%= "\t" %>RAW FILE COUNT
 <% @audits.each do |a| 
 
 extra_time = 0.0
@@ -11,5 +12,5 @@ run_time = ((a.end_time - a.start_time) / 60).ceil
 user_total = run_time + extra_time
 
 -%>
-<%= a.start_time.to_s(:db) %><%= "\t" %><%= a.cost_center %><%= "\t" %><%= a.job_title %><%= "\t" %><%= user_total.round %>
+<%= a.start_time.to_s(:db) %><%= "\t" %><%= a.cost_center %><%= "\t" %><%= a.job_title %><%= "\t" %><%= user_total.round %><%= "\t" %><%= a.raw_file_count %>
 <% end -%>
