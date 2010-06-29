@@ -7,6 +7,8 @@ namespace :archive do
     total = 0
     total_no_lims = 0
     total_no_file = 0
+
+    puts "Owner\tProject ID\tProject Name\tAnalysis ID\tAnalysis Name\tCreated At\tAnalysis Link\tFASTA Database\tInput File\tLIMS Path"
     PipelineAnalysis.find(:all).each do |pa|
       total += 1
       if pa.jobs.empty? || pa.jobs.last.runscript.match(/#{LIMS_SCRIPT_PATH}/).nil?
@@ -15,7 +17,7 @@ namespace :archive do
       else  
          total_inputs = 0
          total_inputs_found = 0
-         files = '' 
+         files = []
          pa.jobs.last.runscript.each_line do |l|
             if l =~ /scp (#{LIMS_SCRIPT_PATH}\/.+) proteomics\@/
                # found a reference to a lims input
@@ -24,14 +26,17 @@ namespace :archive do
                # now lets see if we can find the file now..
                o = `find #{LIMS_CURRENT_PATH} -iname #{fname}`               
                total_inputs_found += 1 unless o.empty?
-               files += "#{fname},"
+               last_file = o.split("\n").last
+               puts "#{pa.owner}\t#{pa.pipeline_project.id}\t#{pa.pipeline_project.name}\t#{pa.id}\t#{pa.name}\t#{pa.created_at}\thttp://bioinf.itmat.upenn.edu/qInteract2/analysis/view/#{pa.id}\t#{pa.jobs.last.analysis_setting.prot_db}\t#{fname}\t#{last_file}"
+               files << fname
             end
 
          end
-         files.chomp!(',')
          unless total_inputs == total_inputs_found
             total_no_file += 1
-            puts "#{pa.owner}\t#{pa.pipeline_project.name} => #{pa.name}\t#{pa.created_at}\thttp://bioinf.itmat.upenn.edu/qInteract2/analysis/view/#{pa.id}\t#{files}"
+	    # files.each do |f|
+              # puts "#{pa.owner}\t#{pa.pipeline_project.name}\t#{pa.name}\t#{pa.created_at}\thttp://bioinf.itmat.upenn.edu/qInteract2/analysis/view/#{pa.id}\t#{f}"
+            # end
          end
 
       end
