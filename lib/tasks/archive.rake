@@ -8,7 +8,7 @@ namespace :archive do
     total_no_lims = 0
     total_no_file = 0
 
-    puts "Owner\tProject ID\tProject Name\tAnalysis ID\tAnalysis Name\tCreated At\tAnalysis Link\tFASTA Database\tInput File\tLIMS Path"
+    puts "Owner\tProject ID\tProject Name\tAnalysis ID\tAnalysis Name\tCreated At\tAnalysis Link\tFASTA Database\tInput File Reference\tBest Available LIMS Path"
     PipelineAnalysis.find(:all).each do |pa|
       total += 1
       if pa.jobs.empty? || pa.jobs.last.runscript.match(/#{LIMS_SCRIPT_PATH}/).nil?
@@ -22,12 +22,21 @@ namespace :archive do
             if l =~ /scp (#{LIMS_SCRIPT_PATH}\/.+) proteomics\@/
                # found a reference to a lims input
                total_inputs += 1
-               fname = $1.split('/').last
+               path_array = $1.split('/')
+               dname = path_array[path_array.length-2]
+               fname = path_array.last
                # now lets see if we can find the file now..
                o = `find #{LIMS_CURRENT_PATH} -iname #{fname}`               
                total_inputs_found += 1 unless o.empty?
-               last_file = o.split("\n").last
-               puts "#{pa.owner}\t#{pa.pipeline_project.id}\t#{pa.pipeline_project.name}\t#{pa.id}\t#{pa.name}\t#{pa.created_at}\thttp://bioinf.itmat.upenn.edu/qInteract2/analysis/view/#{pa.id}\t#{pa.jobs.last.analysis_setting.prot_db}\t#{fname}\t#{last_file}"
+               o_array = o.split("\n")
+               best = o_array.select {|p| p =~ /#{path_array[path_array.length-2]}/}
+               if best.empty?
+                 last_file = o_array.last
+               else
+                 last_file = best.last
+               end
+
+               puts "#{pa.owner}\t#{pa.pipeline_project.id}\t#{pa.pipeline_project.name}\t#{pa.id}\t#{pa.name}\t#{pa.created_at}\thttp://bioinf.itmat.upenn.edu/qInteract2/analysis/view/#{pa.id}\t#{pa.jobs.last.analysis_setting.prot_db}\t#{dname}/#{fname}\t#{last_file}"
                files << fname
             end
 
