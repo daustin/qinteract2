@@ -3,6 +3,15 @@ class AnalysisController < ApplicationController
   require "tpp_file"
   require "yaml"
   require 'net/http'
+  require 'json'
+
+  def files
+    # returns a list of file paths and their file sizes as json
+    
+    @analysis = PipelineAnalysis.find(params[:id])
+    render :text => @analysis.file_hash.to_json
+
+  end
 
   def index
     list
