@@ -1,5 +1,5 @@
 class AnalysisController < ApplicationController
-  skip_before_filter CASClient::Frameworks::Rails::Filter, :only => [:zip,:unzip,:zip_prep ]
+  skip_before_filter CASClient::Frameworks::Rails::Filter, :only => [:zip,:unzip,:zip_prep, :files ]
   require "tpp_file"
   require "yaml"
   require 'net/http'

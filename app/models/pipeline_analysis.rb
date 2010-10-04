@@ -60,8 +60,21 @@ class PipelineAnalysis < ActiveRecord::Base
       runscript.each_line do |l|
         if l =~ /#{DATAFILE_PATH_PREFIX}/
           path = l.split(" ")[1].gsub(/\/mnt\/san\/lims1/, '/lims')
-          size = File.size(path)
-          files[:lims_files] << {:filename => path, :size => size}            
+          if File.exist? path
+            size = File.size(path)
+	  else
+            #try to find it!
+            find = `find /lims/data_files/*/#{File.basename(path)}`
+            best = ''
+            find.each {|k| best = k }
+            if File.exist? best
+               size = File.size(best)
+            else
+              next
+            end
+
+          end
+          files[:lims_files] << {:path => path, :size => size}            
         end
       end      
     end
