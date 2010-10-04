@@ -61,6 +61,9 @@ namespace :archive do
   desc "Try to find all projects and analyses that don't have lims references"
   task :find_non_lims_analyses => :environment do
 
+    LIMS_SCRIPT_PATH='/mnt/san/lims1'
+    LIMS_CURRENT_PATH = '/lims/data_files'
+    
     total_no_lims = 0
 
     puts "Owner\tProject ID\tProject Name\tAnalysis ID\tAnalysis Name\tCreated At\tAnalysis Link\tFASTA Database"
