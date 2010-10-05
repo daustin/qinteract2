@@ -5,7 +5,7 @@ class LimsController < ApplicationController
       
       @projects = User.find(params[:id]).projects
     else
-      @projects = User.find_by_login(session[:cas_user]).projects
+      @projects = User.find_by_username(session[:cas_user]).projects
     end
     
     render(:layout => false)
@@ -21,8 +21,7 @@ class LimsController < ApplicationController
   end
   def files
     #display file from sample id
-    @files = Project.find(params[:id]).data_files.find(:all,
-                                                       :conditions => ["lower(filesystem_name) like ? OR lower(filesystem_name) like ?", "%.raw", "%.mzxml"] )
+    @files = Project.find(params[:id]).items.find(:all, :conditions => ["lower(attachment_file_name) like ? OR lower(attachment_file_name) like ?", "%.raw", "%.mzxml"] )
     
     @lims_path = DATAFILE_PATH_PREFIX
     render(:layout => false)

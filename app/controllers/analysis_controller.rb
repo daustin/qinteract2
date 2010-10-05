@@ -209,7 +209,7 @@ class AnalysisController < ApplicationController
     @dataset_type = 'Sequest'
     @pipeline_project = PipelineProject.find(params[:id])
     @import_job = Job.findByPBS(params[:qsubid].to_i) if ! params[:qsubid].nil?
-    @users = User.find(:all, :order => "login")    
+    @users = User.find(:all, :order => "username")    
     @pipeline_analysis = PipelineAnalysis.new
     @pipeline_analysis.pipeline_project = @pipeline_project
     @pipeline_analysis.pipeline_project_id = @pipeline_project.id
@@ -260,7 +260,7 @@ class AnalysisController < ApplicationController
     
     # @pipeline_project = PipelineProject.find(params[:id])
     @dataset_type = 'Sequest'
-    @users = User.find(:all, :order => "login")
+    @users = User.find(:all, :order => "username")
     @pipeline_analysis = PipelineAnalysis.new
     @pipeline_analysis.pipeline_project = @pipeline_project
     @job = Job.new

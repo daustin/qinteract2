@@ -1,5 +1,5 @@
 class LimsActiveRecord < ActiveRecord::Base
   self.abstract_class = true
-  self.establish_connection "LIMS"
+  self.establish_connection "ILIMS"
 
 end

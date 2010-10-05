@@ -6,7 +6,7 @@
       <% for file in @files -%>
       
         <INPUT type="checkbox" name="rawfile[]" 
-          value="<%= File.join(@lims_path, file.filesystem_path, file.filesystem_name) -%>"  
+          value="<%= "#{@lims_path}#{file.attachment.url}" -%>"  
           checked />
         <%= file.name %> <BR>
         </li>

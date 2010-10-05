@@ -1,7 +1,13 @@
 class User < LimsActiveRecord
-  has_many :data_files
-  has_many :projects
-  has_many :memberships
-  has_many :groups, :through => :memberships
-  # has_and_belongs_to_many :groups
+
+  has_many :memberships, :dependent => :destroy
+  has_many :projects, :through => :memberships
+  has_many :items
+  
+  # new columns need to be added here to be writable through mass assignment
+  attr_accessible :username, :email, :password, :password_confirmation, :admin
+
+  attr_accessor :password
+  
+  
 end
