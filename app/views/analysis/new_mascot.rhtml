@@ -65,12 +65,12 @@ Choose Input files
 <td nowrap>
 
 <% @users.each do |u| %>
-<%= link_to_remote("#{u.login}",
+<%= link_to_remote("#{u.username}",
 :loading => "load_div_image('inputs_div')", 
  :url => { :controller => "lims", :action => :list, :id => u.id },
-:failure => "alert('HTTP Error ' + request.status + '!')", :update => u.login )%>
+:failure => "alert('HTTP Error ' + request.status + '!')", :update => u.username )%>
 
-<div id="<%= u.login %>">
+<div id="<%= u.username %>">
 
 </div>
 

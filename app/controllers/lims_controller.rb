@@ -21,8 +21,8 @@ class LimsController < ApplicationController
   end
   def files
     #display file from sample id
-    @files = Project.find(params[:id]).items.find(:all, :conditions => ["lower(attachment_file_name) like ? OR lower(attachment_file_name) like ?", "%.raw", "%.mzxml"] )
-    
+    @files = Project.find(params[:id]).items.select{ |i| i.attachment_file_name.downcase =~ /\.raw/ || i.attachment_file_name.downcase =~ /\.mzxml/}
+          
     @lims_path = DATAFILE_PATH_PREFIX
     render(:layout => false)
   end
