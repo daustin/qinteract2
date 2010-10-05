@@ -10,9 +10,11 @@ class Item < LimsActiveRecord
 
   def path
     
-    return "#{PAPERCLIP_ROOT}/system/attachment/#{self.id}/original/#{self.attachment_file_name}"
+    return "#{DATAFILE_PATH_PREFIX}/system/attachment/#{self.id}/original/#{self.attachment_file_name}"
         
   end
+  
+  
   
   
 end

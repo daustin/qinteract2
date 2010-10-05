@@ -144,13 +144,13 @@ class MainController < ApplicationController
         
         
         script.each do |line|
-          if (line.downcase =~ /scp\s\/mnt\/san\/lims1\/data_files.+\.raw\sproteomics\@sequest/) then
+          if (line.downcase =~ /scp\s\/mnt\/san\/lims1\/ilims_data.+\.raw\sproteomics\@sequest/) then
             
             @inputfiles = @inputfiles + 1
             
           end
           
-          if (line.downcase =~ /scp\s\/mnt\/san\/lims1\/data_files.+\.mzxml\sproteomics\@sequest/) then
+          if (line.downcase =~ /scp\s\/mnt\/san\/lims1\/ilims_data.+\.mzxml\sproteomics\@sequest/) then
             
             @inputfiles = @inputfiles + 1
             

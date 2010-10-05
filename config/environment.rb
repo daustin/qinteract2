@@ -10,8 +10,6 @@ RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
-require 'paperclip'
-
 # qInteract specific params
 QINTERACT_PROJECT_ROOT = '/www-data/www/htdocs/qInteract/data2' #PROJECT ROOT RELAVITVE TO MONGREL SERVER. TO READ INFO ABOUT JOB DATA
 PROJECT_ROOT = '/data/www/htdocs/qInteract/data2' #PROJECT ROOT FROM BLADES AND GUAC
